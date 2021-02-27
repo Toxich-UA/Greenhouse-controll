@@ -3,3 +3,5 @@ controlers/__pycache__/*
 logs/*
 DB/*
 sensors/*
+static/css/*
+static/js/libs/*
