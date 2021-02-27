@@ -1,3 +1,5 @@
-logs/
-DB/
-sensors/
+*.pyc
+logs/*
+DB/*
+sensors/*
+sensors/*

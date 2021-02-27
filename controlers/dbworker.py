@@ -31,15 +31,15 @@ class DBWorker(object):
     def get_statistic(self, conn, ip, range):
         cursor = conn.cursor()
         if (range == "hour"):
-            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '+2 hours', '-1 Minute')", (ip,))
+            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '+2 hours', '-1 hour')", (ip,))
         elif(range == "day"):
-            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '+2 hours', '-2 day')", (ip,))
+            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '+2 hours', '-1 day')", (ip,))
 
         return cursor.fetchall()
     
     def get_statistic_for_hour(self, conn, ip):
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '+2 hours', '-1 Minute')", (ip,))
+        cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '+2 hours', '-1 hour')", (ip,))
         return cursor.fetchall()
 
     def delete_greenhouse(self, conn, ip):
