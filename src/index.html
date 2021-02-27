@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Greenhouses</title>
+</head>
+
+<body>
+
+    {% include 'nav.html'%}
+
+    <div class="container">
+        <div class="row pt-2">
+            {% for item in gh %}
+
+            <div class="col-sm-4 mb-2">
+
+                <div class="card">
+                    <h5 class="card-header">
+                        <div class="row">
+                            <div class="col-sm">
+                                <h3> {{gh[loop.index0][2]}}</h3>
+                            </div>
+                            <div class="col-sm">
+                                <p class="text-end" id="ipAddres">{{gh[loop.index0][1]}}</p>
+                            </div>
+                        </div>
+                    </h5>
+                    <div class="card-body">
+
+                        <p class="card-text">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Температура воздуха :
+                                {{gh[loop.index0][4].air.temperature.avg}}°C</li>
+                            <li class="list-group-item">Влажность воздуха : {{gh[loop.index0][4].air.humidity.val}}%
+                            </li>
+                            <li class="list-group-item">Температура почвы :
+                                {{gh[loop.index0][4].soil.temperature.val}}°C</li>
+                            <li class="list-group-item">Влажность почвы : {{gh[loop.index0][4].soil.humidity.avg}}%
+                            </li>
+                            <li class="list-group-item">Вентиляторы : <span class="fans"
+                                    id="fans">{{gh[loop.index0][5].fans}}</span></li>
+                            <li class="list-group-item">Насос : <span class="pump"
+                                    id="pump">{{gh[loop.index0][5].pump}}</span></li>
+                            <li class="list-group-item">Освещение : <span class="lamps"
+                                    id="pump">{{gh[loop.index0][5].lamps}}</span></li>
+                        </ul>
+                        </p>
+                        <a href="greenhouse?ip={{item[1]}}" class="btn btn-primary stretched-link">Детали</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="../static/js/libs/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/libs/jquery-3.5.1.js"></script>
+    <script src="../static/js/index.js"></script>
+</body>
+
+</html>

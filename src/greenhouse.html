@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/css/bootstrap4-toggle.min.css" rel="stylesheet">
+
+    <title>Greenhouses</title>
+</head>
+
+<body>
+    {% include 'nav.html'%}
+
+    <div class="container p-2">
+
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        <h3> {{data[0][2]}}</h3>
+
+                    </div>
+                    <div class="col">
+                        <p class="text-end" id="ipAddres">{{data[0][1]}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" rowspan="2" class="col-md-2">
+                                Температура воздуха
+                            </th>
+                            <td>
+                                Уровень растений :
+                            </td>
+                            <td>
+                                <span id="air_temp_a"> {{sensors.air.temperature.a.val}}</span>°C
+                                <i id="air_temp_a_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Уровень растений :
+                            </td>
+                            <td>
+                                <span id="air_temp_b"> {{sensors.air.temperature.b.val}}</span>°C
+                                <i id="air_temp_b_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2" class="col-md-2">
+                                Влажность воздуха
+                            </th>
+                            <td>
+                                <span id="air_hum"> {{sensors.air.humidity.val}}</span>%
+                                <i id="air_hum_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2">
+                                Температура почвы
+                            </th>
+                            <td>
+                                <span id="soil_temp"> {{sensors.soil.temperature.val}}</span>°C
+                                <i id="soil_temp_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="2">
+                                Влажность почвы
+                            </th>
+                            <td>
+                                верх :
+                            </td>
+                            <td>
+                                <span id="soil_hum_a"> {{sensors.soil.humidity.a.val}}</span>%
+                                <i id="soil_hum_a_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                низ :
+                            </td>
+                            <td>
+                                <span id="soil_hum_b"> {{sensors.soil.humidity.b.val}}</span>%
+                                <i id="soil_hum_b_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                Температура у конька
+                            </th>
+                            <td>
+                                <span id="air_temp_c"> {{sensors.air.temperature.c.val}}</span>°C
+                                <i id="air_temp_c_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="col-sm-2">
+                                Вентиляторы
+                                <div>
+                                    <input id="fansControl" type="checkbox" {% if controls.fans_control_mode %} checked
+                                        {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
+                                        data-size="sm">
+                                </div>
+                            </th>
+                            <td class="table-success" id="fansStatus"></td>
+                            <td>
+                                <button class="btn" id="fan"></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="col-sm-2">
+                                Насос
+                                <div>
+                                    <input id="pumpControl" type="checkbox" {% if controls.pump_control_mode %} checked
+                                        {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
+                                        data-size="sm">
+                                </div>
+                            </th>
+                            <td class="table-danger" id="pumpStatus"></td>
+                            <td>
+                                <button class="btn" id="pump"></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="col-sm-2">
+                                Освещение
+                                <div>
+                                    <input id="lampsControl" type="checkbox" {% if controls.lamps_control_mode %}
+                                        checked {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
+                                        data-size="sm">
+                                </div>
+                            </th>
+                            <td class="table-danger" id="lampsStatus"></td>
+                            <td>
+                                <button class="btn" id="lamps"></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </p>
+                <br>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                <h5>Настройки</h5>
+            </div>
+            <div class="card-body">
+                <div class="card-header">
+                    <h5>
+                        Вентиляторы
+                    </h5>
+                </div>
+                <p class="card-text">
+                <form action="get">
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" placeholder="Температура включения">
+                        <span class="input-group-text">-</span>
+                        <input type="number" class="form-control" placeholder="Температура отключения">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Установить</button>
+                </form>
+                </p>
+            </div>
+            <div class="card-body">
+                <div class="card-header">
+                    <h5>
+                        Насос
+                    </h5>
+                </div>
+                <p class="card-text">
+                <table class="table table-striped">
+                    <tbody>
+                        {% for key in ghConfig.pump %}
+                        <tr>
+                            <th class="col-md-2" scope="row">
+                                {{config[loop.index0]}}<br>
+                                <button class="btn-sm btn-primary m-1" onclick="hideForm(this)" id="{{loop.index0}}"
+                                    type="submit">
+                                    Добавить
+                                </button>
+                            </th>
+                            <td>
+                                <ul>
+                                    {% for k in ghConfig.pump[key] %}
+                                    <li class="d-inline-block p-1 bg-info m-1">
+                                        {{k}}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        <tr class="timeform" id="form{{loop.index0}}">
+                            <td colspan="2">
+                                <div class="">
+                                    <form action="get">
+                                        <div class="input-group mb-3">
+                                            <input type="time" id="pumpTime{{loop.index0}}Start" class="form-control" placeholder="Start time">
+                                            <span class="input-group-text">-</span>
+                                            <input type="time" id="pumpTime{{loop.index0}}End" class="form-control" placeholder="End time">
+                                        </div>
+
+                                        <button type="submit" id="pumpTime{{loop.index0}}" name="{{config[loop.index0]}}" class="btn btn-primary pumpTimeBtn">Добавить</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </p>
+                <br>
+            </div>
+        </div>
+    </div>
+    <script src="../static/js/libs/jquery-3.5.1.js"></script>
+    <script src="../static/js/libs/bootstrap4-toggle.min.js"></script>
+    <script src="../static/js/greenhouse.js"></script>
+
+</body>
+
+</html>

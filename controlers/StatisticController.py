@@ -1,0 +1,76 @@
+import sqlite3
+import threading
+import BaseConstants
+import jsonprocessor as json
+import json as js
+from dbworker import DBWorker
+from networker import Networker
+from sensors_data import Sensors_data
+from munch import Munch
+
+db = DBWorker()
+networker = Networker()
+update_interval = 5
+write_to_db_interval = 12 * update_interval  # It is a multiplier (interval * 5 second)
+counter = 0
+
+
+class StatisticController(object):
+    list_of_greenhouses_data = {}
+    running = True
+
+    def __init__(self):
+        connection = sqlite3.connect(BaseConstants.DB_STRING)
+        for gh in db.get_all_greenhouses(connection):
+            new_data = json.json2obj(networker.get_sensors_data(gh[1]))
+            self.list_of_greenhouses_data[gh[1]] = Sensors_data(new_data)
+        connection.close
+
+    def start_statistic_module(self):
+        global counter
+        for key in self.list_of_greenhouses_data:
+            self.list_of_greenhouses_data[key].set_change(
+                networker.get_sensors_data(self.list_of_greenhouses_data[key].data.ip))
+        self.write_to_files()
+        if (counter == write_to_db_interval):
+            self.log_all_data()
+            counter = 0
+            print("Data_logged")
+
+        counter += 5
+        if (self.running):
+            threading.Timer(update_interval, self.start_statistic_module).start()
+
+    def log_all_data(self):
+        connection = sqlite3.connect(BaseConstants.DB_STRING)
+
+        for key in self.list_of_greenhouses_data:
+            if (self.list_of_greenhouses_data[key].data.sensors.air.temperature.avg != "Нет данных"):
+                db.log_temperature_data(
+                    connection, self.list_of_greenhouses_data[key].data)
+
+        connection.close
+
+    def write_to_files(self):
+        for key in self.list_of_greenhouses_data:
+            with open("./sensors/{}.json".format(key), 'w') as file:
+                file.write(
+                    js.dumps(self.list_of_greenhouses_data[key].dump(), indent=4, sort_keys=True))
+
+    def get_sensors_data(self, ip):
+        with open("./sensors/{}.json".format(ip), 'r') as file:
+            data = json.json2obj(js.load(file)).sensors
+
+            return data
+
+    def get_sensors_status(self, ip):
+        with open("./sensors/{}.json".format(ip), 'r') as file:
+            data = json.json2obj(js.load(file)).status
+
+            return data
+
+    def add(self, ip, item):
+        self.list_of_greenhouses_data[ip] = item
+
+    def remove(self, ip):
+        del self.list_of_greenhouses_data[ip]

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Greenhouses</title>
+</head>
+
+<body>
+
+    {% include 'nav.html'%}
+
+    <div class="container">
+        <div class="pt-2">
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">Добавлено!</h4>
+            </div>
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Ошибка добавления!</h4>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5>Настройки</h5>
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h5>
+                            Добавить теплицу
+                        </h5>
+                    </div>
+                    <p class="card-text">
+                    <form>
+                        <div class="mb-3">
+                            <label for="ip" class="form-label">IP</label>
+                            <input type="text" class="form-control" id="ip" name="ip" value=""
+                                placeholder="192.168.0.XXX" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghName" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="ghname" name="ghname" value=""
+                                placeholder="Имя" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Коментарий</label>
+                            <input type="text" class="form-control" id="comment" name="comment" value=""
+                                placeholder="Коментарий">
+                        </div>
+
+                        <button type="submit" id="add_greenhouse" class="btn btn-primary">Добавить</button>
+                    </form>
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="card-header">
+                        <h5>
+                            Список теплиц
+                        </h5>
+                    </div>
+                    <p class="card-text">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">IP</th>
+                                  <th scope="col">Имя</th>
+                                  <th scope="col">Коментарий</th>
+                                  <th scope="col"></th>
+                                </tr>
+                              </thead>
+                            <tbody>
+                                {% for item in gh %}
+                                <tr id="ghfield{{loop.index0}}">
+                                    <td>
+                                        {{loop.index}}
+                                    </td>
+                                    <td id="ghip{{loop.index0}}">
+                                        {{item[1]}}
+                                    </td>
+                                    <td>
+                                        {{item[2]}}
+                                    </td>
+                                    <td>
+                                        {{item[3]}}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-close btnRemove" id="{{loop.index0}}" aria-label="Close"></button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </p>
+                    <br>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="../static/js/libs/jquery-3.5.1.js"></script>
+    <script src="../static/js/libs/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/settings.js"></script>
+</body>
+
+</html>

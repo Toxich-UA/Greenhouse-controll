@@ -1,0 +1,4 @@
+cherrypy
+requests
+jinja2
+munch
