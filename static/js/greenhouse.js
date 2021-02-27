@@ -217,11 +217,12 @@ $(document).ready(function () {
         if (timeStart && timeEnd) {
             $.ajax({
                 type: "GET",
-                url: "add_new_pump_activation_time",
+                url: "/add_new_pump_activation_time",
                 data: {
                     day: $(this).attr('name'),
                     start: timeStart,
-                    end: timeEnd
+                    end: timeEnd,
+                    ip: $("#ipAddres").text()
                 }
             }).done(function (data) {
                 console.log(data);
@@ -231,5 +232,25 @@ $(document).ready(function () {
                 };
             });
         }
+    });
+    $("#setNewFansTempBtn").click(function (e){
+        e.preventDefault()
+        let timeOn = $("#fansTempOn").val();
+        let timeOff = $("#fansTempOff").val();
+        $.ajax({
+            type: "GET",
+            url: "/set_new_fans_activation_time",
+            data: {
+                start: timeOn,
+                end: timeOff,
+                ip: $("#ipAddres").text()
+            }
+        }).done(function (data) {
+            console.log(data);
+            if(data == "200"){
+                alert("Успешно добавлено")
+                location.reload();
+            };
+        });
     });
 });

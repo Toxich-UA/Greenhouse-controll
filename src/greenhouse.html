@@ -156,19 +156,23 @@
             </div>
             <div class="card-body">
                 <div class="card-header">
-                    <h5>
-                        Вентиляторы
-                    </h5>
+                    <div class="d-flex justify-content-start">
+
+                        <h5 class="px-2">
+                            Вентиляторы
+                        </h5>
+                        <div class="px-2 bg-dark text-white" id="fansOnTime">{{ghConfig.fans}}</div>
+                    </div>
                 </div>
                 <p class="card-text">
-                <form action="get">
+                <form>
                     <div class="input-group mb-3">
-                        <input type="number" class="form-control" placeholder="Температура включения">
+                        <input type="number" class="form-control" id="fansTempOn" placeholder="Температура включения">
                         <span class="input-group-text">-</span>
-                        <input type="number" class="form-control" placeholder="Температура отключения">
+                        <input type="number" class="form-control" id="fansTempOff" placeholder="Температура отключения">
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Установить</button>
+                    <button type="submit" id="setNewFansTempBtn" class="btn btn-primary">Установить</button>
                 </form>
                 </p>
             </div>
@@ -204,12 +208,16 @@
                                 <div class="">
                                     <form action="get">
                                         <div class="input-group mb-3">
-                                            <input type="time" id="pumpTime{{loop.index0}}Start" class="form-control" placeholder="Start time">
+                                            <input type="time" id="pumpTime{{loop.index0}}Start" class="form-control"
+                                                placeholder="Start time">
                                             <span class="input-group-text">-</span>
-                                            <input type="time" id="pumpTime{{loop.index0}}End" class="form-control" placeholder="End time">
+                                            <input type="time" id="pumpTime{{loop.index0}}End" class="form-control"
+                                                placeholder="End time">
                                         </div>
 
-                                        <button type="submit" id="pumpTime{{loop.index0}}" name="{{config[loop.index0]}}" class="btn btn-primary pumpTimeBtn">Добавить</button>
+                                        <button type="submit" id="pumpTime{{loop.index0}}"
+                                            name="{{config[loop.index0]}}"
+                                            class="btn btn-primary pumpTimeBtn">Добавить</button>
                                     </form>
                                 </div>
                             </td>

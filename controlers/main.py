@@ -1,3 +1,4 @@
+from json import encoder
 import cherrypy
 import os
 import BaseConstants
@@ -27,9 +28,19 @@ lamps_control_mode = True
 class ServerStart(object):
 
     def __init__(self):
-        pass
         global statistic
-
+        connection = sqlite3.connect(BaseConstants.DB_STRING)
+        greengouses = db.get_all_greenhouses(connection)
+        error = False
+        for gh in greengouses:
+            try:
+                open("./configs/{}_Config.json".format(gh[1]), "x")
+            except:
+                error = True
+            if(not error):
+                f = open("./configs/{}_Config.json".format(gh[1]), "w+")
+                f.write(open("./configs/greenhouseConfig.json", "r").read())
+                f.close()
         statistic = SC()
         statistic_method_thread = th.Timer(
             5.0, statistic.start_statistic_module)
@@ -63,8 +74,9 @@ class ServerStart(object):
     @cherrypy.expose
     def greenhouse(self, ip):
         tmpl = env.get_template(BaseConstants.GREENHOUSE)
-        ghConfig = json.json2obj(
-            open("./configs/greenhouseConfig.json").read())
+        with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
+            ghConfig = json.json2obj(outfile.read())
+
         config = json.json2obj(open(BaseConstants.CONFIG).read()).names
 
         connection = sqlite3.connect(BaseConstants.DB_STRING)
@@ -181,12 +193,12 @@ class ServerStart(object):
         return data
 
     @cherrypy.expose
-    def add_new_pump_activation_time(self, day, start, end):
-        data = json.json2obj(open("./configs/greenhouseConfig.json").read())
-        data.pump[day].append("{0}-{1}".format(start, end))
-
-        with open("./configs/greenhouseConfig.json", 'w') as outfile:
-            js.dump(data, outfile)
+    def add_new_pump_activation_time(self, day, start, end, ip):
+        with open("./configs/{}_Config.json".format(ip), 'r+') as outfile:
+            data = json.json2obj(outfile.read())
+            data.pump[day].append("{0}-{1}".format(start, end))
+            outfile.seek(0)
+            js.dump(data, outfile, indent=4, ensure_ascii=False)
         return "200"
 
     def good_print(self, text):
@@ -194,6 +206,14 @@ class ServerStart(object):
         print(text)
         print("========================")
 
+    @cherrypy.expose
+    def set_new_fans_activation_time(self, start, end, ip):
+        with open("./configs/{}_Config.json".format(ip), 'r+') as outfile:
+            data = json.json2obj(outfile.read())
+            data.fans = "{0}-{1}".format(start, end)
+            outfile.seek(0)
+            js.dump(data, outfile, indent=4, ensure_ascii=False)
+        return "200"
 
 @cherrypy.expose
 class db_processing(object):
@@ -214,6 +234,7 @@ class db_processing(object):
         db.delete_greenhouse(connection, ip)
         connection.close
         return "200"
+
 
 def shutdown():
     statistic.running = False
