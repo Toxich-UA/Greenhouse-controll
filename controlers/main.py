@@ -10,7 +10,7 @@ import json as js
 from StatisticController import StatisticController as SC
 from cherrypy.process.plugins import SignalHandler
 import threading as th
-from sensors_data import Sensors_data 
+from sensors_data import Sensors_data
 from networker import Networker
 from jinja2 import Environment, FileSystemLoader
 
@@ -31,7 +31,8 @@ class ServerStart(object):
         global statistic
 
         statistic = SC()
-        statistic_method_thread = th.Timer(5.0, statistic.start_statistic_module)
+        statistic_method_thread = th.Timer(
+            5.0, statistic.start_statistic_module)
         statistic_method_thread.start()
 
     @cherrypy.expose
@@ -138,23 +139,13 @@ class ServerStart(object):
         return "200"
 
     @cherrypy.expose
-    def get_logged_statistic_for_hour(self):
+    def get_logged_statistic(self, ip, range):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
-        greenhouses_data = db.get_all_greenhouses(connection)
-        data = self.transform_data_from_db(connection, greenhouses_data, "hour")
+        data = self.transform_data_from_db(connection, ip, range)
         connection.close
         return json.dump(data)
 
-    @cherrypy.expose
-    def get_logged_statistic_for_day(self):
-        connection = sqlite3.connect(BaseConstants.DB_STRING)
-        greenhouses_data = db.get_all_greenhouses(connection)
-        data = self.transform_data_from_db(connection, greenhouses_data, "day")
-        connection.close
-        return json.dump(data)
-
-
-    def transform_data_from_db(self, connection, greenhouses_data, range):
+    def transform_data_from_db(self, connection, ip, range):
         counter = 0
         data = Munch()
         dates = []
@@ -162,21 +153,25 @@ class ServerStart(object):
         air_humidity = []
         soil_temperature = []
         soil_humidity = []
-        for gh in greenhouses_data:
-            ip = gh[1]
-            for d in db.get_statistic(connection, ip, range):
-                if (range == "day" and counter == 1):
-                    counter = 0
-                    continue
-                dates.append(str(datetime.strptime(d[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0)))
-                air_temperature.append(d[2])
-                air_humidity.append(d[3])
-                soil_temperature.append(d[4])
-                soil_humidity.append(d[5])
-                counter = counter + 1
-            
+        for d in db.get_statistic(connection, ip, range):
+            if (range == "day" and counter == 1):
+                counter = 0
+                continue
+            if(range == "hour"):
+                dates.append(str(datetime.strptime(
+                    d[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0).time()))
+            else:
+                dates.append(str(datetime.strptime(
+                    d[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0)))
+
+            air_temperature.append(d[2])
+            air_humidity.append(d[3])
+            soil_temperature.append(d[4])
+            soil_humidity.append(d[5])
+            counter = counter + 1
+
             data.labels = dates
-            data.ip = gh[1]
+            data.ip = ip
             data.greenhouses = Munch()
             data.greenhouses.data = Munch()
             data.greenhouses.data.air_temperature = air_temperature
@@ -184,7 +179,6 @@ class ServerStart(object):
             data.greenhouses.data.soil_temperature = soil_temperature
             data.greenhouses.data.soil_humidity = soil_humidity
         return data
-
 
     @cherrypy.expose
     def add_new_pump_activation_time(self, day, start, end):
@@ -195,13 +189,12 @@ class ServerStart(object):
             js.dump(data, outfile)
         return "200"
 
-
     def good_print(self, text):
         print("========================")
         print(text)
         print("========================")
 
-    
+
 @cherrypy.expose
 class db_processing(object):
 
@@ -222,9 +215,10 @@ class db_processing(object):
         connection.close
         return "200"
 
-def shutdown(): 
+def shutdown():
     statistic.running = False
     cherrypy.engine.exit()
+
 
 if __name__ == '__main__':
     config = {
@@ -255,8 +249,6 @@ signalhandler.handlers['SIGINT'] = shutdown
 signalhandler.subscribe()
 
 
-
 webapp = ServerStart()
 webapp.db = db_processing()
 cherrypy.quickstart(webapp, '/', config)
-

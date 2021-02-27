@@ -1,5 +1,5 @@
 *.pyc
+controlers/__pycache__/*
 logs/*
 DB/*
-sensors/*
 sensors/*

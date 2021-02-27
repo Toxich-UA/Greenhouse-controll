@@ -32,42 +32,37 @@ function renderChart(data, labels, lable, ip, color) {
     });
 }
 
-$("#hour").click(
+$("#show").click(
     function () {
+        let params = getParams();
+        let ip = params[0];
+        let range = params[1];
         $.ajax({
             type: "GET",
-            url: "/get_logged_statistic_for_hour",
+            url: "/get_logged_statistic",
             data: {
+                ip: ip,
+                range: range
             }
         }).done(function (dataIn) {
             $('#chartsHolder').empty();
             var data = jQuery.parseJSON(dataIn);
 
-            renderChart(data.greenhouses.data.air_temperature, data.labels, "Температура воздуха", data.ip, chartColors.red);
-            renderChart(data.greenhouses.data.air_humidity, data.labels, "Влажность воздуха", data.ip, chartColors.orange);
-            renderChart(data.greenhouses.data.soil_temperature, data.labels, "Температура почвы", data.ip, chartColors.yellow);
-            renderChart(data.greenhouses.data.soil_humidity, data.labels, "Влажность почвы", data.ip, chartColors.green);
-        })
-
-    }
-);
-$("#day").click(
-    function () {
-        $.ajax({
-            type: "GET",
-            url: "/get_logged_statistic_for_day",
-            data: {
+            if (!jQuery.isEmptyObject(data)) {
+                renderChart(data.greenhouses.data.air_temperature, data.labels, "Температура воздуха", data.ip, chartColors.red);
+                renderChart(data.greenhouses.data.air_humidity, data.labels, "Влажность воздуха", data.ip, chartColors.orange);
+                renderChart(data.greenhouses.data.soil_temperature, data.labels, "Температура почвы", data.ip, chartColors.yellow);
+                renderChart(data.greenhouses.data.soil_humidity, data.labels, "Влажность почвы", data.ip, chartColors.green);
+            }else{
+                $("#myModal").modal("show");
             }
-        }).done(function (dataIn) {
-            $('#chartsHolder').empty();
-            var data = jQuery.parseJSON(dataIn);
-
-            renderChart(data.greenhouses.data.air_temperature, data.labels, "Температура воздуха", data.ip, chartColors.red);
-            renderChart(data.greenhouses.data.air_humidity, data.labels, "Влажность воздуха", data.ip, chartColors.orange);
-            renderChart(data.greenhouses.data.soil_temperature, data.labels, "Температура почвы", data.ip, chartColors.yellow);
-            renderChart(data.greenhouses.data.soil_humidity, data.labels, "Влажность почвы", data.ip, chartColors.green);
-
         })
 
     }
 );
+
+function getParams() {
+    range = $("#range").val();
+    ip = $("#greenhouse_ip").val();
+    return [ip, range];
+};

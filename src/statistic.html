@@ -14,27 +14,50 @@
 
     {% include 'nav.html'%}
     <div class="container">
-        <div class="dropdown pt-2">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2"
-                data-bs-toggle="dropdown" aria-expanded="false">
-                Статистика за ...
-            </button>
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
-                <li><a class="dropdown-item active" id="hour">Час</a></li>
-                <li><a class="dropdown-item" id="day">День</a></li>
-                <li><a class="dropdown-item" id="month">Месяц</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
-            </ul>
+        <div class="modal" id="myModal" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Ошибка</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Данные по теплице недоступны.</p>
+                    </div>
+                </div>
+
+            </div>
         </div>
+        <form>
+            <div class="row pt-2">
+                <div class="col-sm">
+                    <select class="form-select" id="range" aria-label="Default select example">
+                        <option selected>Статистика за ...</option>
+                        <option value="hour">Час</option>
+                        <option value="day">День</option>
+                        <option value="month">Месяц</option>
+                    </select>
+                </div>
+                <div class="col-sm">
+                    <select class="form-select" id="greenhouse_ip" aria-label="Default select example">
+                        <option selected>Теплица</option>
+                        {% for item in gh %}
+                        <option value="{{item[1]}}">{{item[1]}}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+                <div class="col-sm">
+                    <button type="button" id="show" class="btn btn-primary">Показать</button>
+                </div>
+            </div>
+        </form>
         <div id="chartsHolder">
         </div>
     </div>
 
-    <script src="../static/js/libs/bootstrap.bundle.min.js"></script>
     <script src="../static/js/libs/jquery-3.5.1.js"></script>
+    <script src="../static/js/libs/bootstrap.bundle.min.js"></script>
     <script src="../static/js/libs/Chart.js-2.9.4/dist/Chart.min.js"></script>
     <script src="../static/js/statistic.js"></script>
 </body>
