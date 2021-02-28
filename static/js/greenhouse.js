@@ -237,6 +237,10 @@ $(document).ready(function () {
         e.preventDefault()
         let timeOn = $("#fansTempOn").val();
         let timeOff = $("#fansTempOff").val();
+        if(timeOn == "" || timeOff == ""){
+            alert("Ошибка довавления. Поля должны быть заполнены");
+            return;
+        }
         $.ajax({
             type: "GET",
             url: "/set_new_fans_activation_time",

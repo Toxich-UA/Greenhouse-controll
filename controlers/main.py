@@ -14,6 +14,8 @@ import threading as th
 from sensors_data import Sensors_data
 from networker import Networker
 from jinja2 import Environment, FileSystemLoader
+import pathlib
+
 
 env = Environment(loader=FileSystemLoader('src'))
 db = DBWorker()
@@ -31,16 +33,9 @@ class ServerStart(object):
         global statistic
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         greengouses = db.get_all_greenhouses(connection)
-        error = False
         for gh in greengouses:
-            try:
-                open("./configs/{}_Config.json".format(gh[1]), "x")
-            except:
-                error = True
-            if(not error):
-                f = open("./configs/{}_Config.json".format(gh[1]), "w+")
-                f.write(open("./configs/greenhouseConfig.json", "r").read())
-                f.close()
+            create_greenhouse_config_file(gh[1])
+
         statistic = SC()
         statistic_method_thread = th.Timer(
             5.0, statistic.start_statistic_module)
@@ -215,6 +210,7 @@ class ServerStart(object):
             js.dump(data, outfile, indent=4, ensure_ascii=False)
         return "200"
 
+
 @cherrypy.expose
 class db_processing(object):
 
@@ -227,15 +223,27 @@ class db_processing(object):
         connection.close
         statistic.running = False
         statistic = SC()
+        create_greenhouse_config_file(ip)
         return "200"
 
     def GET(self, ip):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         db.delete_greenhouse(connection, ip)
         connection.close
+        os.remove("./configs/{}_Config.json".format(ip))
         return "200"
 
-
+def create_greenhouse_config_file(ip):
+        error = False
+        try:
+            open("./configs/{}_Config.json".format(ip), "x")
+        except:
+            error = True
+        if(not error):
+            f = open("./configs/{}_Config.json".format(ip), "w+")
+            f.write(open("./configs/greenhouseConfig.json", "r").read())
+            f.close()
+        
 def shutdown():
     statistic.running = False
     cherrypy.engine.exit()
@@ -257,7 +265,7 @@ if __name__ == '__main__':
             'tools.staticdir.dir': 'static'
         },
     }
-cherrypy.config.update({'log.screen': False,
+cherrypy.config.update({'log.screen': True,
                         'server.socket_host': '0.0.0.0',
                         'log.access_file': './logs/access.txt',
                         'log.error_file': './logs/error.txt'})

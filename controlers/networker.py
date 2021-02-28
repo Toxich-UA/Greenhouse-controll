@@ -22,9 +22,14 @@ class Networker(object):
 
     def get_sensors_data(self, ip):
         data = self.__request(ip, "sensors")
-        
         if (data):
-            status = json.json2obj(data)
+            try:
+                status = json.json2obj(data)
+            except:
+                status = open(BaseConstants.NO_CONNECTION, "r").read()
+                print("============================")
+                print("Json got wrong data object")
+                print("============================")
         else:
             status = json.json2obj(open(BaseConstants.NO_CONNECTION).read())
             status.ip = ip
@@ -50,6 +55,13 @@ class Networker(object):
 
     def get_peripherals_status(self, ip):
         data = self.__request(ip, "peripherals")
+        print("============================")
+        print(data)
+        print("============================")
         if (not(data)):
-            return '{"fans" : "Нет данных","pump" : "Нет данных"}'
+            return '''{
+                        "fans": "Нет данных",
+                        "pump": "Нет данных",
+                        "lamps": "Нет данных"
+                    }'''
         return data

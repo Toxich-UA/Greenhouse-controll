@@ -11,7 +11,8 @@ from munch import Munch
 db = DBWorker()
 networker = Networker()
 update_interval = 5
-write_to_db_interval = 12 * update_interval  # It is a multiplier (interval * 5 second)
+# It is a multiplier (interval * 5 second)
+write_to_db_interval = 12 * update_interval
 counter = 0
 
 
@@ -39,7 +40,8 @@ class StatisticController(object):
 
         counter += 5
         if (self.running):
-            threading.Timer(update_interval, self.start_statistic_module).start()
+            threading.Timer(update_interval,
+                            self.start_statistic_module).start()
 
     def log_all_data(self):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
@@ -53,21 +55,40 @@ class StatisticController(object):
 
     def write_to_files(self):
         for key in self.list_of_greenhouses_data:
-            with open("./sensors/{}.json".format(key), 'w') as file:
-                file.write(
-                    js.dumps(self.list_of_greenhouses_data[key].dump(), indent=4, sort_keys=True))
+            try:
+                with open("./sensors/{}.json".format(key), 'w') as file:
+                    file.write(
+                        js.dumps(self.list_of_greenhouses_data[key].dump(), indent=4))
+            except:
+                print("==========================")
+                print("Writing went wrong")
+                print("==========================")
 
     def get_sensors_data(self, ip):
-        with open("./sensors/{}.json".format(ip), 'r') as file:
-            data = json.json2obj(js.load(file)).sensors
-
-            return data
+        try:
+            with open("./sensors/{}.json".format(ip), 'r') as file:
+                data = json.json2obj(js.loads(file.read())).sensors
+        except:
+            file = open(BaseConstants.NO_CONNECTION, "r")
+            data = json.json2obj(js.loads(file.read())).sensors
+            file.close()
+            print("==========================")
+            print("Get sensors data went wrong")
+            print("==========================")
+        return data
 
     def get_sensors_status(self, ip):
-        with open("./sensors/{}.json".format(ip), 'r') as file:
-            data = json.json2obj(js.load(file)).status
-
-            return data
+        try:
+            with open("./sensors/{}.json".format(ip), 'r') as file:
+                data = json.json2obj(js.loads(file.read())).status
+        except:
+            file = open(BaseConstants.NO_CONNECTION, "r")
+            data = json.json2obj(js.loads(file.read())).status
+            file.close()
+            print("==========================")
+            print("Get sensors status went wrong")
+            print("==========================")
+        return data
 
     def add(self, ip, item):
         self.list_of_greenhouses_data[ip] = item
