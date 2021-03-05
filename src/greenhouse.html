@@ -161,7 +161,7 @@
                         <h5 class="px-2">
                             Вентиляторы
                         </h5>
-                        <div class="px-2 bg-dark text-white" id="fansOnTime">{{ghConfig.fans}}</div>
+                        <div class="px-2 bg-dark text-white" id="fansOnTime">{{ghConfig.fans}}</div>°C
                     </div>
                 </div>
                 <p class="card-text">
@@ -188,17 +188,19 @@
                         {% for key in ghConfig.pump %}
                         <tr>
                             <th class="col-md-2" scope="row">
-                                {{config[loop.index0]}}<br>
+                                <p id="blockName{{loop.index0}}">{{config[loop.index0]}}</p>
                                 <button class="btn-sm btn-primary m-1" onclick="hideForm(this)" id="{{loop.index0}}"
                                     type="submit">
                                     Добавить
                                 </button>
                             </th>
                             <td>
-                                <ul>
+                                <ul name="{{loop.index0}}">
                                     {% for k in ghConfig.pump[key] %}
-                                    <li class="d-inline-block p-1 bg-info m-1">
+                                    <li class="d-inline-block p-1 bg-info m-1 position-relative">
                                         {{k}}
+                                        <button type="button" id="removePumpTime"
+                                            class="btn-close btn-sm position-absolute top-0 start-100 translate-middle"></button>
                                     </li>
                                     {% endfor %}
                                 </ul>

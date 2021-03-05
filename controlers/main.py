@@ -1,10 +1,12 @@
 from json import encoder
+from re import T
 import cherrypy
 import os
 import BaseConstants
 from datetime import date, datetime
 from munch import Munch
 from dbworker import DBWorker
+from PeripheralsControl import PeripheralsControl
 import sqlite3
 import jsonprocessor as json
 import json as js
@@ -14,12 +16,13 @@ import threading as th
 from sensors_data import Sensors_data
 from networker import Networker
 from jinja2 import Environment, FileSystemLoader
-import pathlib
+
 
 
 env = Environment(loader=FileSystemLoader('src'))
 db = DBWorker()
 networker = Networker()
+peripheral_control = PeripheralsControl()
 statistic = None
 
 fans_control_mode = True
@@ -34,7 +37,15 @@ class ServerStart(object):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         greengouses = db.get_all_greenhouses(connection)
         for gh in greengouses:
-            create_greenhouse_config_file(gh[1])
+            ip = gh[1]
+            create_greenhouse_config_file(ip)
+            with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
+                data = json.json2obj(outfile.read())
+                for day in data.pump:
+                    for time in data.pump[day]:
+                        start, end = time.split("-", 1)
+                        peripheral_control.set_pump_activation_time_by_day(day, start, end, ip)
+
 
         statistic = SC()
         statistic_method_thread = th.Timer(
@@ -108,18 +119,8 @@ class ServerStart(object):
         return json.dump(statistic.get_sensors_data(ip))
 
     @cherrypy.expose
-    def toggle_fans(self, ip):
-        data = networker.toggle_fans(ip)
-        return data
-
-    @cherrypy.expose
-    def toggle_lamps(self, ip):
-        data = networker.toggle_lamps(ip)
-        return data
-
-    @cherrypy.expose
-    def toggle_pump(self, ip):
-        data = networker.toggle_pump(ip)
+    def toggle_peripheral_status(self, ip, peripheral):
+        data = networker.toggle_peripheral_status(ip, peripheral)
         return data
 
     @cherrypy.expose
@@ -189,11 +190,24 @@ class ServerStart(object):
 
     @cherrypy.expose
     def add_new_pump_activation_time(self, day, start, end, ip):
-        with open("./configs/{}_Config.json".format(ip), 'r+') as outfile:
+        with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
             data = json.json2obj(outfile.read())
             data.pump[day].append("{0}-{1}".format(start, end))
-            outfile.seek(0)
+        with open("./configs/{}_Config.json".format(ip), 'w') as outfile:
             js.dump(data, outfile, indent=4, ensure_ascii=False)
+        peripheral_control.set_pump_activation_time_by_day(ip, start, end, day)
+        return "200"
+
+    
+
+    @cherrypy.expose
+    def remove_pump_activation_time(self, day, start, end, ip):
+        with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
+            data = json.json2obj(outfile.read())
+            data.pump[day].remove("{0}-{1}".format(start, end))
+        with open("./configs/{}_Config.json".format(ip), 'w') as outfile:
+            js.dump(data, outfile, indent=4, ensure_ascii=False)
+        peripheral_control.remove_pump_activation_time(day, start, end, ip)
         return "200"
 
     def good_print(self, text):

@@ -86,9 +86,10 @@ $(document).ready(function () {
     $("#fan").click(function (e) {
         $.ajax({
             type: "GET",
-            url: "/toggle_fans",
+            url: "/toggle_peripheral_status",
             data: {
-                "ip": $("#ipAddres").text()
+                "ip": $("#ipAddres").text(),
+                "peripheral": "fans"
             }
         }).done(function (data) {
             if (data != "Нет данных") {
@@ -101,9 +102,10 @@ $(document).ready(function () {
     $("#pump").click(function (e) {
         $.ajax({
             type: "GET",
-            url: "/toggle_pump",
+            url: "/toggle_peripheral_status",
             data: {
-                "ip": $("#ipAddres").text()
+                "ip": $("#ipAddres").text(),
+                "peripheral": "pump"
             }
         }).done(function (data) {
             if (data != "Нет данных") {
@@ -116,9 +118,10 @@ $(document).ready(function () {
     $("#lamps").click(function (e) {
         $.ajax({
             type: "GET",
-            url: "/toggle_lamps",
+            url: "/toggle_peripheral_status",
             data: {
-                "ip": $("#ipAddres").text()
+                "ip": $("#ipAddres").text(),
+                "peripheral": "lamps"
             }
         }).done(function (data) {
             if (data != "Нет данных") {
@@ -233,12 +236,40 @@ $(document).ready(function () {
             });
         }
     });
+    $("#removePumpTime").click(function (e) {
+        e.preventDefault();
+        let time = $(this).parent().text().trim().split('-');
+        let index = $(this).parent().parent().attr("name");
+        let timeStart = time[0];
+        let timeEnd = time[1];
+
+        if (timeStart && timeEnd) {
+            $.ajax({
+                type: "GET",
+                url: "/remove_pump_activation_time",
+                data: {
+                    day: $("#blockName"+index).text().trim(),
+                    start: timeStart,
+                    end: timeEnd,
+                    ip: $("#ipAddres").text()
+                }
+            }).done(function (data) {
+                console.log(data);
+                if(data == "200"){
+                    alert("Успешно добавлено")
+                    location.reload();
+                };
+            });
+        }
+    });
+    
     $("#setNewFansTempBtn").click(function (e){
         e.preventDefault()
         let timeOn = $("#fansTempOn").val();
         let timeOff = $("#fansTempOff").val();
         if(timeOn == "" || timeOff == ""){
-            alert("Ошибка довавления. Поля должны быть заполнены");
+            $("#fansTempOn").toggleClass("border border-danger");
+            $("#fansTempOff").toggleClass("border border-danger");
             return;
         }
         $.ajax({
