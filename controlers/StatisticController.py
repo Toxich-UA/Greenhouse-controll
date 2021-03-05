@@ -1,5 +1,9 @@
+from PeripheralsControl import PeripheralsControl
 import sqlite3
 import threading
+import time
+
+import schedule
 import BaseConstants
 import jsonprocessor as json
 import json as js
@@ -28,29 +32,24 @@ class StatisticController(object):
         connection.close
 
     def start_statistic_module(self):
-        global counter
+        schedule.every(update_interval).seconds.do(self.update_sensors_data_file)
+        schedule.every(write_to_db_interval).seconds.do(self.log_all_data)
+        while self.running:
+            schedule.run_pending()
+            time.sleep(1)
+
+    def update_sensors_data_file(self):
         for key in self.list_of_greenhouses_data:
             self.list_of_greenhouses_data[key].set_change(
                 networker.get_sensors_data(self.list_of_greenhouses_data[key].data.ip))
         self.write_to_files()
-        if (counter == write_to_db_interval):
-            self.log_all_data()
-            counter = 0
-            print("Data_logged")
-
-        counter += 5
-        if (self.running):
-            threading.Timer(update_interval,
-                            self.start_statistic_module).start()
 
     def log_all_data(self):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
-
         for key in self.list_of_greenhouses_data:
             if (self.list_of_greenhouses_data[key].data.sensors.air.temperature.avg != "Нет данных"):
                 db.log_temperature_data(
                     connection, self.list_of_greenhouses_data[key].data)
-
         connection.close
 
     def write_to_files(self):
@@ -61,7 +60,7 @@ class StatisticController(object):
                         js.dumps(self.list_of_greenhouses_data[key].dump(), indent=4))
             except:
                 print("==========================")
-                print("Writing went wrong")
+                print("Writing to file went wrong")
                 print("==========================")
 
     def get_sensors_data(self, ip):
