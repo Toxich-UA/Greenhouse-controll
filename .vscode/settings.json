@@ -1,0 +1,9 @@
+{
+    "python.pythonPath": "/usr/bin/python3",
+    "python.analysis.extraPaths": [
+        "./controllers"
+    ],
+    "python.autoComplete.extraPaths": [
+        "./controllers"
+    ]
+}
