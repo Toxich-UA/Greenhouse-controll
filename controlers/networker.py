@@ -8,12 +8,16 @@ logger = logging.getLogger('networker')
 
 class Networker(object):
 
-    def __request(self, ip, path):
+    def __request(self, ip, path, status=None):
         request_string = "http://{0}:80/{1}".format(ip, path)
         data = None
         try:
-            data = requests.post(request_string, data={
-                                 "key": BaseConstants.SECRET_KEY}, verify=False, timeout=2).text
+            if(status == None):
+                data = requests.post(request_string, data={
+                    "key": BaseConstants.SECRET_KEY}, verify=False, timeout=2).text
+            else:
+                data = requests.post(request_string, data={
+                    "key": BaseConstants.SECRET_KEY, "status": status}, verify=False, timeout=2).text
         except:
             logger.error("Greenhouse on {} is not responding".format(ip))
             return False
@@ -35,29 +39,20 @@ class Networker(object):
             status.ip = ip
         return status
 
-    def toggle_fans(self, ip):
-        data = self.__request(ip, "peripheral/fans")
+    def toggle_peripheral_status(self, ip, peripheral_name):
+        data = self.__request(ip, f"peripheral/{peripheral_name}")
         if (not(data)):
             return 'Нет данных'
         return data
 
-    def toggle_pump(self, ip):
-        data = self.__request(ip, "peripheral/pump")
-        if (not(data)):
-            return 'Нет данных'
-        return data
-
-    def toggle_lamps(self, ip):
-        data = self.__request(ip, "peripheral/lamps")
+    def set_peripheral_status(self, ip, peripheral_name, status):
+        data = self.__request(ip, f"peripheral/{peripheral_name}", status)
         if (not(data)):
             return 'Нет данных'
         return data
 
     def get_peripherals_status(self, ip):
         data = self.__request(ip, "peripherals")
-        print("============================")
-        print(data)
-        print("============================")
         if (not(data)):
             return '''{
                         "fans": "Нет данных",

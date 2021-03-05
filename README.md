@@ -87,21 +87,18 @@ will return
 
 Request to
 ```http
-    http://192.168.0.xxx/peripherals/fans
+    http://192.168.0.xxx/peripherals/{peripheral}
 ```
-will switch status of fans and return it as text ( ON / OFF )
+will switch status of {peripheral} and return it as text ( ON / OFF )
 
 Request to
 ```http
-    http://192.168.0.xxx/peripherals/pump
+    http://192.168.0.xxx/peripherals/{peripheral}
 ```
-will switch status of pump and return it as text ( ON / OFF )
+with status key
 
-Request to
-```http
-    http://192.168.0.xxx/peripherals/lamps
-```
-will switch status of pump and return it as text ( ON / OFF )
+will set the status of {peripheral} and return it as text ( ON / OFF )
+
 
 Database
 ========
