@@ -15,7 +15,6 @@ update_interval = 5
 write_to_db_interval = 2 * update_interval
 counter = 0
 
-
 class StatisticController(object):
     list_of_greenhouses_data = {}
     running = True
@@ -31,7 +30,7 @@ class StatisticController(object):
         if not hasattr(cls, 'instance'):
             cls.instance = super(StatisticController, cls).__new__(cls)
         return cls.instance
-
+      
     def start_statistic_module(self):
         schedule.every(update_interval).seconds.do(self.update_sensors_data_file)
         schedule.every(write_to_db_interval).seconds.do(self.log_all_data)

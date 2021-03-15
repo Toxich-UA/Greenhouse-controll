@@ -14,48 +14,55 @@ will return
 {
     "ip": "192.168.x.xxx",
     "sensors": {
-        "air": {
-            "temperature": {
-                "a": {
-                    "val": "Нет данных",
-                    "change": "0"
-                },
-                "b": {
-                    "val": "Нет данных",
-                    "change": "0"
-                },
-                "c": {
-                    "val": "Нет данных",
-                    "change": "0"
-                },
-                "avg": "Нет данных"
+        "temperature": {
+            "DH22_temperature": {
+                "val": "Нет данных",
+                "change": "0"
             },
-            "humidity": {
+            "OneWire_a": {
+                "val": "Нет данных",
+                "change": "0"
+            },
+            "OneWire_b": {
+                "val": "Нет данных",
+                "change": "0"
+            },
+            "OneWire_c": {
+                "val": "Нет данных",
+                "change": "0"
+            },
+            "OneWire_d": {
+                "val": "Нет данных",
+                "change": "0"
+            },
+            "OneWire_e": {
                 "val": "Нет данных",
                 "change": "0"
             }
         },
-        "soil": {
-            "temperature": {
+        "humidity":{
+            "DH22_humidity": {
                 "val": "Нет данных",
                 "change": "0"
             },
-            "humidity":{
-                "a": {
-                    "val": "Нет данных",
-                    "change": "0"
-                },
-                "b": {
-                    "val": "Нет данных",
-                    "change": "0"
-                },
-                "c": {
-                    "val": "Нет данных",
-                    "change": "0"
-                },
-                "avg": "Нет данных"
-            } 
-        }
+            "a": {
+                "val": "Нет данных",
+                "change": "0"
+            },
+            "b": {
+                "val": "Нет данных",
+                "change": "0"
+            },
+            "c": {
+                "val": "Нет данных",
+                "change": "0"
+            },
+            "d": {
+                "val": "Нет данных",
+                "change": "0"
+            }
+
+        } 
     },
     "status":{
         "fans": "Нет данных",

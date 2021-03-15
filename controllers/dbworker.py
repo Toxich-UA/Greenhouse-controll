@@ -2,7 +2,6 @@ import sqlite3
 import datetime
 import BaseConstants
 
-
 class DBWorker(object):
 
     def __init__(self):

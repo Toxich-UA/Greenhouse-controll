@@ -22,7 +22,6 @@ networker = Networker()
 peripheral_control = PeripheralsControl()
 statistic = None
 interface_view_model = None
-
 fans_control_mode = True
 pump_control_mode = True
 lamps_control_mode = True
@@ -55,7 +54,6 @@ class ServerStart(object):
     def index(self):
         tmpl = env.get_template(BaseConstants.INDEX)
         config = json.json2obj(open(BaseConstants.CONFIG).read())
-
         sensors = None
         peripherals = None
         connection = sqlite3.connect(BaseConstants.DB_STRING)
@@ -189,6 +187,7 @@ class ServerStart(object):
             air_humidity.append(item[3])
             soil_temperature.append(item[4])
             soil_humidity.append(item[5])
+
             counter = counter + 1
 
             data.labels = dates
@@ -256,6 +255,7 @@ class db_processing(object):
         connection.close
         statistic.remove(ip)
         interface_view_model.remove(ip)
+
         os.remove("./configs/{}_Config.json".format(ip))
         return "200"
 

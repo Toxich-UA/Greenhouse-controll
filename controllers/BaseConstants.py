@@ -1,4 +1,3 @@
-# Other
 SECRET_KEY = "8Synbt9N7p5yttx8"
 
 # HTML
@@ -7,7 +6,9 @@ GREENHOUSE = "greenhouse.html"
 SETTINGS = "settings.html"
 STATISTIC = "statistic.html"
 HELP = "help.html"
+
 GH_CONFIG = "greenhouseSettings.html"
+
 
 # JSON
 CONFIG = "./configs/config.json"
