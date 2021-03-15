@@ -21,7 +21,6 @@
                 <div class="row">
                     <div class="col">
                         <h3> {{data[0][2]}}</h3>
-
                     </div>
                     <div class="col">
                         <p class="text-end" id="ipAddres">{{data[0][1]}}</p>
@@ -33,72 +32,112 @@
                 <table class="table table-striped">
                     <tbody>
                         <tr>
-                            <th scope="row" rowspan="2" class="col-md-2">
-                                Температура воздуха
-                            </th>
-                            <td>
-                                Уровень растений :
-                            </td>
-                            <td>
-                                <span id="air_temp_a"> {{sensors.air.temperature.a.val}}</span>°C
-                                <i id="air_temp_a_change" class="fs-5 bi bi-dash"></i>
+                            <td colspan="3" class="table-dark">
+                                Температура
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                Уровень растений :
+                                {{names.temperature_a}} :
                             </td>
-                            <td>
-                                <span id="air_temp_b"> {{sensors.air.temperature.b.val}}</span>°C
-                                <i id="air_temp_b_change" class="fs-5 bi bi-dash"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2" class="col-md-2">
-                                Влажность воздуха
-                            </th>
-                            <td>
-                                <span id="air_hum"> {{sensors.air.humidity.val}}</span>%
-                                <i id="air_hum_change" class="fs-5 bi bi-dash"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" colspan="2">
-                                Температура почвы
-                            </th>
-                            <td>
-                                <span id="soil_temp"> {{sensors.soil.temperature.val}}</span>°C
-                                <i id="soil_temp_change" class="fs-5 bi bi-dash"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" rowspan="2">
-                                Влажность почвы
-                            </th>
-                            <td>
-                                верх :
-                            </td>
-                            <td>
-                                <span id="soil_hum_a"> {{sensors.soil.humidity.a.val}}</span>%
-                                <i id="soil_hum_a_change" class="fs-5 bi bi-dash"></i>
+                            <td colspan="2">
+                                <span id="temp_a"> {{sensors.temperature_a.val}}</span>°C
+                                <i id="temp_a_change" class="fs-5 bi bi-dash"></i>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                низ :
+                                {{names.temperature_b}} :
                             </td>
-                            <td>
-                                <span id="soil_hum_b"> {{sensors.soil.humidity.b.val}}</span>%
-                                <i id="soil_hum_b_change" class="fs-5 bi bi-dash"></i>
+                            <td colspan="2">
+                                <span id="temp_b"> {{sensors.temperature_b.val}}</span>°C
+                                <i id="temp_b_change" class="fs-5 bi bi-dash"></i>
                             </td>
                         </tr>
                         <tr>
-                            <th colspan="2">
-                                Температура у конька
-                            </th>
                             <td>
-                                <span id="air_temp_c"> {{sensors.air.temperature.c.val}}</span>°C
-                                <i id="air_temp_c_change" class="fs-5 bi bi-dash"></i>
+                                {{names.temperature_c}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="temp_c"> {{sensors.temperature_c.val}}</span>°C
+                                <i id="temp_c_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.temperature_d}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="temp_d"> {{sensors.temperature_d.val}}</span>°C
+                                <i id="temp_d_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.temperature_e}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="temp_e"> {{sensors.temperature_e.val}}</span>°C
+                                <i id="temp_e_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.temperature_f}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="temp_f"> {{sensors.temperature_f.val}}</span>°C
+                                <i id="temp_f_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="table-dark">
+                                Влажность
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.humidity_a}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="hum_a"> {{sensors.humidity_a.val}}</span>%
+                                <i id="hum_a_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.humidity_b}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="hum_b"> {{sensors.humidity_b.val}}</span>%
+                                <i id="hum_b_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.humidity_c}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="hum_c"> {{sensors.humidity_c.val}}</span>%
+                                <i id="hum_c_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.humidity_d}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="hum_d"> {{sensors.humidity_d.val}}</span>%
+                                <i id="hum_d_change" class="fs-5 bi bi-dash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{names.humidity_e}} :
+                            </td>
+                            <td colspan="2">
+                                <span id="hum_e"> {{sensors.humidity_e.val}}</span>%
+                                <i id="hum_e_change" class="fs-5 bi bi-dash"></i>
                             </td>
                         </tr>
                         <tr>
@@ -231,6 +270,7 @@
                 </p>
                 <br>
             </div>
+            <a href="/greenhouseSettings?ip={{data[0][1]}}" class="btn btn-primary m-3">Настройка отображения</a>
         </div>
     </div>
     <script src="../static/js/libs/jquery-3.5.1.js"></script>

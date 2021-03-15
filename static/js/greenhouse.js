@@ -201,13 +201,17 @@ $(document).ready(function () {
             }
         }).done(function (data) {
             var status = jQuery.parseJSON(data);
-            update_status($("#air_temp_a"), status.air.temperature.a, $("#air_temp_a_change"))
-            update_status($("#air_temp_b"), status.air.temperature.b, $("#air_temp_b_change"))
-            update_status($("#air_temp_c"), status.air.temperature.c, $("#air_temp_c_change"))
-            update_status($("#soil_hum_a"), status.soil.humidity.a, $("#soil_hum_a_change"))
-            update_status($("#soil_hum_b"), status.soil.humidity.b, $("#soil_hum_b_change"))
-            update_status($("#soil_temp"), status.soil.temperature, $("#soil_temp_change"))
-            update_status($("#air_hum"), status.air.humidity, $("#air_hum_change"))
+            update_status($("#temp_a"), status.temperature_a, $("#temp_a_change"))
+            update_status($("#temp_b"), status.temperature_b, $("#temp_b_change"))
+            update_status($("#temp_c"), status.temperature_c, $("#temp_c_change"))
+            update_status($("#temp_d"), status.temperature_d, $("#temp_d_change"))
+            update_status($("#temp_e"), status.temperature_e, $("#temp_e_change"))
+            update_status($("#temp_f"), status.temperature_f, $("#temp_f_change"))
+            update_status($("#hum_a"), status.humidity_a, $("#hum_a_change"))
+            update_status($("#hum_b"), status.humidity_b, $("#hum_b_change"))
+            update_status($("#hum_c"), status.humidity_c, $("#hum_c_change"))
+            update_status($("#hum_d"), status.humidity_d, $("#hum_d_change"))
+            update_status($("#hum_e"), status.humidity_e, $("#hum_e_change"))
 
         });
     }, 5 * 1000);

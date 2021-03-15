@@ -41,8 +41,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="ghName" class="form-label">Имя</label>
-                            <input type="text" class="form-control" id="ghname" name="ghname" value=""
-                                placeholder="Имя" required>
+                            <input type="text" class="form-control" id="ghname" name="ghname" value="" placeholder="Имя"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="comment" class="form-label">Коментарий</label>
@@ -61,41 +61,43 @@
                         </h5>
                     </div>
                     <p class="card-text">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                  <th scope="col">#</th>
-                                  <th scope="col">IP</th>
-                                  <th scope="col">Имя</th>
-                                  <th scope="col">Коментарий</th>
-                                  <th scope="col"></th>
-                                </tr>
-                              </thead>
-                            <tbody>
-                                {% for item in gh %}
-                                <tr id="ghfield{{loop.index0}}">
-                                    <td>
-                                        {{loop.index}}
-                                    </td>
-                                    <td id="ghip{{loop.index0}}">
-                                        {{item[1]}}
-                                    </td>
-                                    <td>
-                                        {{item[2]}}
-                                    </td>
-                                    <td>
-                                        {{item[3]}}
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn-close btnRemove" id="{{loop.index0}}" aria-label="Close"></button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">IP</th>
+                                <th scope="col">Имя</th>
+                                <th scope="col">Коментарий</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in gh %}
+                            <tr id="ghfield{{loop.index0}}">
+                                <td>
+                                    {{loop.index}}
+                                </td>
+                                <td id="ghip{{loop.index0}}">
+                                    {{item[1]}}
+                                </td>
+                                <td>
+                                    {{item[2]}}
+                                </td>
+                                <td>
+                                    {{item[3]}}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn-close btnRemove" id="{{loop.index0}}"
+                                        aria-label="Close"></button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                     </p>
                     <br>
                 </div>
+                </p>
             </div>
         </div>
 
