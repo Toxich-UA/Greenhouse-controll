@@ -1,8 +1,5 @@
-from PeripheralsControl import PeripheralsControl
 import sqlite3
-import threading
 import time
-
 import schedule
 import BaseConstants
 import jsonprocessor as json
@@ -15,9 +12,8 @@ db = DBWorker()
 networker = Networker()
 update_interval = 5
 # It is a multiplier (interval * 5 second)
-write_to_db_interval = 12 * update_interval
+write_to_db_interval = 2 * update_interval
 counter = 0
-
 
 class StatisticController(object):
     list_of_greenhouses_data = {}
@@ -30,6 +26,11 @@ class StatisticController(object):
             self.list_of_greenhouses_data[gh[1]] = Sensors_data(new_data)
         connection.close
 
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(StatisticController, cls).__new__(cls)
+        return cls.instance
+      
     def start_statistic_module(self):
         schedule.every(update_interval).seconds.do(self.update_sensors_data_file)
         schedule.every(write_to_db_interval).seconds.do(self.log_all_data)
@@ -46,7 +47,7 @@ class StatisticController(object):
     def log_all_data(self):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         for key in self.list_of_greenhouses_data:
-            if (self.list_of_greenhouses_data[key].data.sensors.air.temperature.avg != "Нет данных"):
+            if (self.list_of_greenhouses_data[key].data.sensors.temperature.DH22_temperature.val != "Нет данных"):
                 db.log_temperature_data(
                     connection, self.list_of_greenhouses_data[key].data)
         connection.close
@@ -64,8 +65,9 @@ class StatisticController(object):
 
     def get_sensors_data(self, ip):
         try:
-            with open("./sensors/{}.json".format(ip), 'r') as file:
-                data = json.json2obj(js.loads(file.read())).sensors
+            # with open("./sensors/{}.json".format(ip), 'r') as file:
+            #     data = json.json2obj(js.loads(file.read())).sensors
+            data = self.list_of_greenhouses_data[ip].dump().sensors
         except:
             file = open(BaseConstants.NO_CONNECTION, "r")
             data = json.json2obj(js.loads(file.read())).sensors
@@ -77,8 +79,9 @@ class StatisticController(object):
 
     def get_sensors_status(self, ip):
         try:
-            with open("./sensors/{}.json".format(ip), 'r') as file:
-                data = json.json2obj(js.loads(file.read())).status
+            # with open("./sensors/{}.json".format(ip), 'r') as file:
+            #     data = json.json2obj(js.loads(file.read())).status
+            data = self.list_of_greenhouses_data[ip].dump().status
         except:
             file = open(BaseConstants.NO_CONNECTION, "r")
             data = json.json2obj(js.loads(file.read())).status
@@ -88,8 +91,11 @@ class StatisticController(object):
             print("==========================")
         return data
 
-    def add(self, ip, item):
-        self.list_of_greenhouses_data[ip] = item
+    def add(self, ip):
+        connection = sqlite3.connect(BaseConstants.DB_STRING)
+        new_data = json.json2obj(networker.get_sensors_data(ip))
+        self.list_of_greenhouses_data[ip] = Sensors_data(new_data)
+        connection.close()
 
     def remove(self, ip):
         del self.list_of_greenhouses_data[ip]

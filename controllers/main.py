@@ -3,6 +3,7 @@ import os
 import BaseConstants
 from datetime import datetime
 from munch import Munch
+from InterfaceViewModel import InterfaceViewModel
 from dbworker import DBWorker
 from PeripheralsControl import PeripheralsControl
 import sqlite3
@@ -20,7 +21,7 @@ db = DBWorker()
 networker = Networker()
 peripheral_control = PeripheralsControl()
 statistic = None
-
+interface_view_model = None
 fans_control_mode = True
 pump_control_mode = True
 lamps_control_mode = True
@@ -30,6 +31,7 @@ class ServerStart(object):
 
     def __init__(self):
         global statistic
+        global interface_view_model
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         greengouses = db.get_all_greenhouses(connection)
         for gh in greengouses:
@@ -46,28 +48,28 @@ class ServerStart(object):
         statistic_method_thread = th.Timer(
             5.0, statistic.start_statistic_module)
         statistic_method_thread.start()
+        interface_view_model = InterfaceViewModel()
 
     @cherrypy.expose
     def index(self):
         tmpl = env.get_template(BaseConstants.INDEX)
         config = json.json2obj(open(BaseConstants.CONFIG).read())
-
+        sensors = None
+        peripherals = None
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         greengouses = db.get_all_greenhouses(connection)
         connection.close
         for index, gh in enumerate(greengouses):
             gh = list(gh)
-            sensors = statistic.get_sensors_data(gh[1])
+            sensors = interface_view_model.get_sensors(gh[1])
             peripherals = json.json2obj(statistic.get_sensors_status(gh[1]))
-            peripherals.fans = "ON" if peripherals.fans else "OFF"
-            peripherals.pump = "ON" if peripherals.pump else "OFF"
-            peripherals.lamps = "ON" if peripherals.lamps else "OFF"
-
+            peripherals.fans = "ON" if peripherals.fans == 1 else "OFF"
+            peripherals.pump = "ON" if peripherals.pump == 1 else "OFF"
+            peripherals.lamps = "ON" if peripherals.lamps == 1 else "OFF"
             gh.append(sensors)
             gh.append(peripherals)
             greengouses[index] = gh
-
-        return tmpl.render(gh=greengouses, peripheral=peripherals, config=config)
+        return tmpl.render(gh=greengouses, config=config)
 
     @cherrypy.expose
     def greenhouse(self, ip):
@@ -80,10 +82,11 @@ class ServerStart(object):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         data = db.get_greenhouse(connection, ip)
         connection.close
-        sensors = statistic.get_sensors_data(ip)
+        sensors = interface_view_model.get_sensors(ip)
+        names = interface_view_model.get_names(ip)
 
         controls = json.json2obj(self.get_peripherals_status(ip))
-        return tmpl.render(data=data, sensors=sensors, ghConfig=ghConfig, config=config, controls=controls)
+        return tmpl.render(data=data, sensors=sensors, ghConfig=ghConfig, config=config, controls=controls, names=names)
 
     @cherrypy.expose
     def settings(self):
@@ -107,8 +110,24 @@ class ServerStart(object):
         return tmpl.render()
 
     @cherrypy.expose
+    def greenhouseSettings(self, ip):
+        tmpl = env.get_template(BaseConstants.GH_CONFIG)
+        names = interface_view_model.get_names(ip).items()
+        sensors = interface_view_model.get_sensors_map(ip).items()
+        return tmpl.render(names=names, sensors=sensors)
+
+    @cherrypy.expose
+    def update_greenhouse_names_and_sensors(self, ip, names, sensors_map):
+        interface_view_model.set_names_map(ip, js.loads(names))
+        interface_view_model.set_sensors_map(ip, js.loads(sensors_map))
+
+        return "200"
+
+    # REST api links
+    @cherrypy.expose
     def status(self, ip):
-        return json.dump(statistic.get_sensors_data(ip))
+        data = json.dump(interface_view_model.get_sensors(ip))
+        return data
 
     @cherrypy.expose
     def toggle_peripheral_status(self, ip, peripheral):
@@ -153,31 +172,31 @@ class ServerStart(object):
         air_humidity = []
         soil_temperature = []
         soil_humidity = []
-        for d in db.get_statistic(connection, ip, range):
+        for item in db.get_statistic(connection, ip, range):
             if (range == "day" and counter == 1):
                 counter = 0
                 continue
             if(range == "hour"):
                 dates.append(str(datetime.strptime(
-                    d[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0).time()))
+                    item[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0).time()))
             else:
                 dates.append(str(datetime.strptime(
-                    d[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0)))
+                    item[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0)))
 
-            air_temperature.append(d[2])
-            air_humidity.append(d[3])
-            soil_temperature.append(d[4])
-            soil_humidity.append(d[5])
+            air_temperature.append(item[2])
+            air_humidity.append(item[3])
+            soil_temperature.append(item[4])
+            soil_humidity.append(item[5])
+
             counter = counter + 1
 
             data.labels = dates
             data.ip = ip
             data.greenhouses = Munch()
-            data.greenhouses.data = Munch()
-            data.greenhouses.data.air_temperature = air_temperature
-            data.greenhouses.data.air_humidity = air_humidity
-            data.greenhouses.data.soil_temperature = soil_temperature
-            data.greenhouses.data.soil_humidity = soil_humidity
+            data.greenhouses.air_temperature = air_temperature
+            data.greenhouses.air_humidity = air_humidity
+            data.greenhouses.soil_temperature = soil_temperature
+            data.greenhouses.soil_humidity = soil_humidity
         return data
 
     @cherrypy.expose
@@ -224,16 +243,19 @@ class db_processing(object):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         data = (ip, ghname, comment)
         db.add_new_greenhouse(connection, data)
-        connection.close
-        statistic.running = False
-        statistic = SC()
+        statistic.add(ip)
+        interface_view_model.add(ip)
         create_greenhouse_config_file(ip)
+        connection.close
         return "200"
 
     def GET(self, ip):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         db.delete_greenhouse(connection, ip)
         connection.close
+        statistic.remove(ip)
+        interface_view_model.remove(ip)
+
         os.remove("./configs/{}_Config.json".format(ip))
         return "200"
 

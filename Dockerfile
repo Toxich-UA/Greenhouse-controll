@@ -6,4 +6,4 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 RUN pip install -r requirements.txt
 
-CMD ["python", "controlers/main.py"]
+CMD ["python", "controllers/main.py"]

@@ -1,8 +1,6 @@
 import sqlite3
 import datetime
 import BaseConstants
-from sqlite3 import Error
-
 
 class DBWorker(object):
 
@@ -49,6 +47,32 @@ class DBWorker(object):
 
     def log_temperature_data(self, conn, data):
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO Statistic (greenhouse_id, air_temperature, air_humidity, soil_temperature, soil_humidity, date) VALUES (?, ?, ?, ?, ?, ?)',
-                       (data.ip, data.sensors.air.temperature.avg, data.sensors.air.humidity.val, data.sensors.soil.temperature.val, data.sensors.soil.humidity.avg, datetime.datetime.now()))
+        cursor.execute("""INSERT INTO Statistic (
+            "greenhouse_id",
+            "temperature_a",
+            "temperature_b",
+            "temperature_c",
+            "temperature_d",
+            "temperature_e",
+            "temperature_DH",
+            "humidity_a",
+            "humidity_b",
+            "humidity_c",
+            "humidity_d",
+            "humidity_DH",
+            "date"
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                       (data.ip,
+                       data.sensors.temperature.OneWire_a.val,
+                       data.sensors.temperature.OneWire_b.val,
+                       data.sensors.temperature.OneWire_c.val,
+                       data.sensors.temperature.OneWire_d.val,
+                       data.sensors.temperature.OneWire_e.val,
+                       data.sensors.temperature.DH22_temperature.val,
+                       data.sensors.humidity.a.val,
+                       data.sensors.humidity.b.val,
+                       data.sensors.humidity.c.val,
+                       data.sensors.humidity.d.val,
+                       data.sensors.humidity.DH22_humidity.val,
+                       datetime.datetime.now()))
         conn.commit()

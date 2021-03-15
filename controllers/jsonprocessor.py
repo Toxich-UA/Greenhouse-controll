@@ -11,10 +11,9 @@ def json2obj(data):
     return data
 
 def load(data):
-
     return json.loads(data)
 
 def dump(data, file=None):
     if(file):
-        return json.dump(data, file)
+        return json.dump(data, file, indent=4, ensure_ascii=False)
     return json.dumps(data)

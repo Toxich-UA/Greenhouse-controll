@@ -10,24 +10,29 @@ class Sensors_data (object):
     
     def set_change(self, new_data):
         temp = new_data
+        temp.sensors.temperature.DH22_temperature.change = self.compare(
+            new_data.sensors.temperature.DH22_temperature.val, self.data.sensors.temperature.DH22_temperature.val)
+        temp.sensors.temperature.OneWire_a.change = self.compare(
+            new_data.sensors.temperature.OneWire_a.val, self.data.sensors.temperature.OneWire_a.val)
+        temp.sensors.temperature.OneWire_b.change = self.compare(
+            new_data.sensors.temperature.OneWire_b.val, self.data.sensors.temperature.OneWire_b.val)
+        temp.sensors.temperature.OneWire_c.change = self.compare(
+            new_data.sensors.temperature.OneWire_c.val, self.data.sensors.temperature.OneWire_c.val)
+        temp.sensors.temperature.OneWire_d.change = self.compare(
+            new_data.sensors.temperature.OneWire_d.val, self.data.sensors.temperature.OneWire_d.val)
+        temp.sensors.temperature.OneWire_e.change = self.compare(
+            new_data.sensors.temperature.OneWire_e.val, self.data.sensors.temperature.OneWire_c.val)
 
-        temp.sensors.air.temperature.a.change = self.compare(
-            new_data.sensors.air.temperature.a.val, self.data.sensors.air.temperature.a.val)
-        temp.sensors.air.temperature.b.change = self.compare(
-            new_data.sensors.air.temperature.b.val, self.data.sensors.air.temperature.b.val)
-        temp.sensors.air.temperature.c.change = self.compare(
-            new_data.sensors.air.temperature.c.val, self.data.sensors.air.temperature.c.val)
-        temp.sensors.air.humidity.change = self.compare(
-            new_data.sensors.air.humidity.val, self.data.sensors.air.humidity.val)
-
-        temp.sensors.soil.humidity.a.change = self.compare(
-            new_data.sensors.soil.humidity.a.val, self.data.sensors.soil.humidity.a.val)
-        temp.sensors.soil.humidity.b.change = self.compare(
-            new_data.sensors.soil.humidity.b.val, self.data.sensors.soil.humidity.b.val)
-        temp.sensors.soil.humidity.c.change = self.compare(
-            new_data.sensors.soil.humidity.c.val, self.data.sensors.soil.humidity.c.val)
-        temp.sensors.soil.temperature.change = self.compare(
-            new_data.sensors.soil.temperature.val, self.data.sensors.soil.temperature.val)
+        temp.sensors.humidity.DH22_humidity.change = self.compare(
+            new_data.sensors.humidity.DH22_humidity.val, self.data.sensors.humidity.DH22_humidity.val)
+        temp.sensors.humidity.a.change = self.compare(
+            new_data.sensors.humidity.a.val, self.data.sensors.humidity.a.val)
+        temp.sensors.humidity.b.change = self.compare(
+            new_data.sensors.humidity.b.val, self.data.sensors.humidity.b.val)
+        temp.sensors.humidity.c.change = self.compare(
+            new_data.sensors.humidity.c.val, self.data.sensors.humidity.c.val)
+        temp.sensors.humidity.d.change = self.compare(
+            new_data.sensors.humidity.d.val, self.data.sensors.humidity.d.val)
         
         self.data = temp
 
