@@ -158,45 +158,63 @@ class ServerStart(object):
         return "200"
 
     @cherrypy.expose
-    def get_logged_statistic(self, ip, range):
+    def get_logged_statistic(self, ip, range, date_start, date_end):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
-        data = self.transform_data_from_db(connection, ip, range)
+        data = self.transform_data_from_db(connection, ip, range, date_start, date_end)
         connection.close
+
         return json.dump(data)
 
-    def transform_data_from_db(self, connection, ip, range):
-        counter = 0
+    def transform_data_from_db(self, connection, ip, range, date_start, date_end):
         data = Munch()
         dates = []
-        air_temperature = []
-        air_humidity = []
-        soil_temperature = []
-        soil_humidity = []
-        for item in db.get_statistic(connection, ip, range):
-            if (range == "day" and counter == 1):
-                counter = 0
-                continue
+        temperature_a = []
+        temperature_b = []
+        temperature_c = []
+        temperature_d = []
+        temperature_e = []
+        temperature_DH = []
+        humidity_a = []
+        humidity_b = []
+        humidity_c = []
+        humidity_d = []
+        humidity_DH = []
+        
+        for item in db.get_statistic(connection, ip, range, date_start, date_end):
             if(range == "hour"):
                 dates.append(str(datetime.strptime(
-                    item[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0).time()))
+                    item[13], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0).time()))
             else:
                 dates.append(str(datetime.strptime(
-                    item[6], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0)))
+                    item[13], "%Y-%m-%d %H:%M:%S.%f").replace(microsecond=0)))
+            temperature_a.append(item[2])
+            temperature_b.append(item[3])
+            temperature_c.append(item[4])
+            temperature_d.append(item[5])
+            temperature_e.append(item[6])
+            temperature_DH.append(item[7])
+            humidity_a.append(item[8])
+            humidity_b.append(item[9])
+            humidity_c.append(item[10])
+            humidity_d.append(item[11])
+            humidity_DH.append(item[12])
 
-            air_temperature.append(item[2])
-            air_humidity.append(item[3])
-            soil_temperature.append(item[4])
-            soil_humidity.append(item[5])
 
-            counter = counter + 1
-
-            data.labels = dates
-            data.ip = ip
-            data.greenhouses = Munch()
-            data.greenhouses.air_temperature = air_temperature
-            data.greenhouses.air_humidity = air_humidity
-            data.greenhouses.soil_temperature = soil_temperature
-            data.greenhouses.soil_humidity = soil_humidity
+        data.labels = dates
+        data.names = list(interface_view_model.get_names(ip).values())
+        data.ip = ip
+        data.greenhouses = Munch()
+        data.greenhouses.temperature_a = temperature_a
+        data.greenhouses.temperature_b = temperature_b
+        data.greenhouses.temperature_c = temperature_c
+        data.greenhouses.temperature_d = temperature_d
+        data.greenhouses.temperature_e = temperature_e
+        data.greenhouses.temperature_DH = temperature_DH
+        data.greenhouses.humidity_a = humidity_a
+        data.greenhouses.humidity_b = humidity_b
+        data.greenhouses.humidity_c = humidity_c
+        data.greenhouses.humidity_d = humidity_d
+        data.greenhouses.humidity_DH = humidity_DH
         return data
 
     @cherrypy.expose

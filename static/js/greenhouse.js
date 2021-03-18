@@ -206,12 +206,12 @@ $(document).ready(function () {
             update_status($("#temp_c"), status.temperature_c, $("#temp_c_change"))
             update_status($("#temp_d"), status.temperature_d, $("#temp_d_change"))
             update_status($("#temp_e"), status.temperature_e, $("#temp_e_change"))
-            update_status($("#temp_f"), status.temperature_f, $("#temp_f_change"))
+            update_status($("#temp_f"), status.temperature_DH, $("#temp_f_change"))
             update_status($("#hum_a"), status.humidity_a, $("#hum_a_change"))
             update_status($("#hum_b"), status.humidity_b, $("#hum_b_change"))
             update_status($("#hum_c"), status.humidity_c, $("#hum_c_change"))
             update_status($("#hum_d"), status.humidity_d, $("#hum_d_change"))
-            update_status($("#hum_e"), status.humidity_e, $("#hum_e_change"))
+            update_status($("#hum_e"), status.humidity_DH, $("#hum_e_change"))
 
         });
     }, 5 * 1000);

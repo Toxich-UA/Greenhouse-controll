@@ -12,8 +12,7 @@ db = DBWorker()
 networker = Networker()
 update_interval = 5
 # It is a multiplier (interval * 5 second)
-write_to_db_interval = 2 * update_interval
-counter = 0
+write_to_db_interval = 12 * update_interval
 
 class StatisticController(object):
     list_of_greenhouses_data = {}
