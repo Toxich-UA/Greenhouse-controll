@@ -47,6 +47,14 @@
                             </select>
                         </div>
                         <div class="col-sm">
+                            <div class="form-check">
+                                <input class="form-check-input on_one" type="checkbox" value="on_one" id="on_one">
+                                <label class="form-check-label" for="on_one">
+                                    На одном
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm">
                             <button type="button" id="show" class="btn btn-primary">Показать</button>
                         </div>
                     </div>
@@ -54,7 +62,7 @@
                         <input type="date" id="date">
                     </div>
                     <div class="d-none pt-3" id="days_range">
-                        От  <input type="date" id="date_start"> До  <input type="date" id="date_end">
+                        От <input type="date" id="date_start"> До <input type="date" id="date_end">
                     </div>
                 </div>
         </form>
@@ -74,8 +82,8 @@
                                 <tr>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="DH22_temperature"
-                                                id="DH22_temperature">
+                                            <input class="form-check-input sensor" type="checkbox"
+                                                value="temperature_DH" id="DH22_temperature">
                                             <label class="form-check-label" for="DH22_temperature">
                                                 DH22 Температура
                                             </label>
@@ -83,7 +91,7 @@
                                     </td>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="OneWire_a"
+                                            <input class="form-check-input sensor" type="checkbox" value="temperature_a"
                                                 id="OneWire_a">
                                             <label class="form-check-label" for="OneWire_a">
                                                 OneWire a
@@ -94,7 +102,7 @@
                                 <tr>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="OneWire_b"
+                                            <input class="form-check-input sensor" type="checkbox" value="temperature_b"
                                                 id="OneWire_b">
                                             <label class="form-check-label" for="OneWire_b">
                                                 OneWire b
@@ -103,7 +111,7 @@
                                     </td>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="OneWire_c"
+                                            <input class="form-check-input sensor" type="checkbox" value="temperature_c"
                                                 id="OneWire_c">
                                             <label class="form-check-label" for="OneWire_c">
                                                 OneWire c
@@ -114,27 +122,7 @@
                                 <tr>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="DH22_humidity"
-                                                id="DH22_humidity">
-                                            <label class="form-check-label" for="DH22_humidity">
-                                                DH22 Влажность
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="humidity_a"
-                                                id="humidity_a">
-                                            <label class="form-check-label" for="humidity_a">
-                                                Датчик влажности почвы a
-                                            </label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="OneWire_d"
+                                            <input class="form-check-input sensor" type="checkbox" value="temperature_d"
                                                 id="OneWire_d">
                                             <label class="form-check-label" for="OneWire_d">
                                                 OneWire d
@@ -143,7 +131,7 @@
                                     </td>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="OneWire_e"
+                                            <input class="form-check-input sensor" type="checkbox" value="temperature_e"
                                                 id="OneWire_e">
                                             <label class="form-check-label" for="OneWire_e">
                                                 OneWire e
@@ -154,7 +142,27 @@
                                 <tr>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="humidity_b"
+                                            <input class="form-check-input sensor" type="checkbox" value="humidity_DH"
+                                                id="DH22_humidity">
+                                            <label class="form-check-label" for="DH22_humidity">
+                                                DH22 Влажность
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input sensor" type="checkbox" value="humidity_a"
+                                                id="humidity_a">
+                                            <label class="form-check-label" for="humidity_a">
+                                                Датчик влажности почвы a
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input sensor" type="checkbox" value="humidity_b"
                                                 id="humidity_b">
                                             <label class="form-check-label" for="humidity_b">
                                                 Датчик влажности почвы b
@@ -163,7 +171,7 @@
                                     </td>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="humidity_c"
+                                            <input class="form-check-input sensor" type="checkbox" value="humidity_c"
                                                 id="humidity_c">
                                             <label class="form-check-label" for="humidity_c">
                                                 Датчик влажности почвы c
@@ -174,7 +182,8 @@
                                 <tr>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="d" id="d">
+                                            <input class="form-check-input sensor" type="checkbox" value="humidity_d"
+                                                id="humidity_d">
                                             <label class="form-check-label" for="d">
                                                 Датчик влажности почвы d
                                             </label>
