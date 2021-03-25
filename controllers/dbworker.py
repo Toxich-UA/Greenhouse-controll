@@ -26,20 +26,17 @@ class DBWorker(object):
         cursor.execute('SELECT * FROM Greenhouses WHERE ip=?', (ip,))
         return cursor.fetchall()
 
-    def get_statistic(self, conn, ip, range):
+    def get_statistic(self, conn, ip, range, date_start, date_end):
         cursor = conn.cursor()
         if (range == "hour"):
-            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '-1 hour')", (ip,))
+            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND id%2 = 0 AND datetime(date) >= datetime('now', '-1 hour')", (ip,))
         elif(range == "day"):
-            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '-1 day')", (ip,))
+            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND id%10 = 0 AND date(date) == ?", (ip, date_start))
+        elif(date_end != ""):
+            cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND id%10 = 0 AND date(date) >= ? AND date(date) <= ?", (ip, date_start, date_end))
 
         return cursor.fetchall()
     
-    def get_statistic_for_hour(self, conn, ip):
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Statistic WHERE greenhouse_id=? AND datetime(date) >=datetime('now', '+2 hours', '-1 hour')", (ip,))
-        return cursor.fetchall()
-
     def delete_greenhouse(self, conn, ip):
         cursor = conn.cursor()
         cursor.execute('DELETE FROM Greenhouses WHERE ip=?', (ip,))

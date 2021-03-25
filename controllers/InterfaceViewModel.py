@@ -34,18 +34,17 @@ class InterfaceViewModel(object):
 
     def update_sensors_map(self):
         for ip, value in self.list_of_statistic_data.items():
-
             value.sensors["temperature_a"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.temperature[value.sensors_map["temperature_a"]]
             value.sensors["temperature_b"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.temperature[value.sensors_map["temperature_b"]]
             value.sensors["temperature_c"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.temperature[value.sensors_map["temperature_c"]]
             value.sensors["temperature_d"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.temperature[value.sensors_map["temperature_d"]]
             value.sensors["temperature_e"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.temperature[value.sensors_map["temperature_e"]]
-            value.sensors["temperature_f"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.temperature[value.sensors_map["temperature_f"]]
+            value.sensors["temperature_DH"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.temperature[value.sensors_map["temperature_DH"]]
             value.sensors["humidity_a"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.humidity[value.sensors_map["humidity_a"]]
             value.sensors["humidity_b"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.humidity[value.sensors_map["humidity_b"]]
             value.sensors["humidity_c"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.humidity[value.sensors_map["humidity_c"]]
             value.sensors["humidity_d"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.humidity[value.sensors_map["humidity_d"]]
-            value.sensors["humidity_e"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.humidity[value.sensors_map["humidity_e"]]
+            value.sensors["humidity_DH"] = self.statistic_controller.list_of_greenhouses_data[ip].dump().sensors.humidity[value.sensors_map["humidity_DH"]]
 
     def set_sensors_map(self, ip, data):
         self.list_of_statistic_data[ip].sensors_map = data
