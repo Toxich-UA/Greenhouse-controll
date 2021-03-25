@@ -142,10 +142,10 @@
                         </tr>
                         <tr>
                             <th scope="row" class="col-sm-2">
-                                Вентиляторы
+                                Вентиляторы {{controls[fans_auto_controll_mode]}} :
                                 <div>
-                                    <input id="fansControl" type="checkbox" {% if controls.fans_control_mode %} checked
-                                        {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
+                                    <input id="fansControl" type="checkbox" {% if controls.fans_auto_controll_mode %}
+                                        checked {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
                                         data-size="sm">
                                 </div>
                             </th>
@@ -158,8 +158,8 @@
                             <th scope="row" class="col-sm-2">
                                 Насос
                                 <div>
-                                    <input id="pumpControl" type="checkbox" {% if controls.pump_control_mode %} checked
-                                        {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
+                                    <input id="pumpControl" type="checkbox" {% if controls.pump_auto_controll_mode %}
+                                        checked {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
                                         data-size="sm">
                                 </div>
                             </th>
@@ -172,7 +172,7 @@
                             <th scope="row" class="col-sm-2">
                                 Освещение
                                 <div>
-                                    <input id="lampsControl" type="checkbox" {% if controls.lamps_control_mode %}
+                                    <input id="lampsControl" type="checkbox" {% if controls.lamps_auto_controll_mode %}
                                         checked {% endif %} data-toggle="toggle" data-on="Авто" data-off="Ручной"
                                         data-size="sm">
                                 </div>
@@ -217,14 +217,33 @@
             </div>
             <div class="card-body">
                 <div class="card-header">
-                    <h5>
-                        Насос
-                    </h5>
+                    <div class="d-flex justify-content-start">
+                        <h5 class="px-2">
+                            Насос
+                        </h5>
+                        <div class="px-2 bg-dark text-white" id="pumpOnTime">{{ghConfig.pump_sensor}}</div>°C
+                        <div class="px-2">
+                            <input id="pumpControll" type="checkbox" {% if controls.pump_auto_controll_by_humidity %}
+                                checked {% endif %} data-toggle="toggle" data-on="Время" data-off="Влажность"
+                                data-size="sm">
+                        </div>
+                    </div>
                 </div>
+                <p class="card-text">
+                <form>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="pumpHumOn" placeholder="Влажность включения">
+                        <span class="input-group-text">-</span>
+                        <input type="number" class="form-control" id="pumpHumOff" placeholder="Влажность отключения">
+                    </div>
+
+                    <button type="submit" id="setNewPumpHumidityBtn" class="btn btn-primary">Установить</button>
+                </form>
+                </p>
                 <p class="card-text">
                 <table class="table table-striped">
                     <tbody>
-                        {% for key in ghConfig.pump %}
+                        {% for key in ghConfig.pump_time %}
                         <tr>
                             <th class="col-md-2" scope="row">
                                 <p id="blockName{{loop.index0}}">{{config[loop.index0]}}</p>
@@ -235,7 +254,7 @@
                             </th>
                             <td>
                                 <ul name="{{loop.index0}}">
-                                    {% for k in ghConfig.pump[key] %}
+                                    {% for k in ghConfig.pump_time[key] %}
                                     <li class="d-inline-block p-1 bg-info m-1 position-relative">
                                         {{k}}
                                         <button type="button" id="removePumpTime"

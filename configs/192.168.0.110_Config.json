@@ -1,19 +1,44 @@
 {
-    "pump": {
-        "Monday": [
-            "10:00-11:00",
-            "11:00-12:00"
-        ],
-        "Tuesday": [
-            "11:00-12:00"
-        ],
-        "Wednesday": [],
-        "Thursday": [],
-        "Friday": [
-            "15:06-15:07"
-        ],
-        "Saturday": [],
-        "Sunday": []
+    "peripherals": {
+        "pump_time": {
+            "Monday": [
+                "12:00-13:00"
+            ],
+            "Tuesday": [],
+            "Wednesday": [],
+            "Thursday": [],
+            "Friday": [],
+            "Saturday": [],
+            "Sunday": []
+        },
+        "pump_sensor": "80-60",
+        "fans": "30-25"
     },
-    "fans": "25-20"
+    "names_map": {
+        "temperature_a": "Датчик 1",
+        "temperature_b": "Датчик 2",
+        "temperature_c": "Датчик 3",
+        "temperature_d": "Датчик температуры 4",
+        "temperature_e": "Датчик температуры 5",
+        "temperature_DH": "Датчик температуры 6",
+        "humidity_a": "Датчик влажности 1",
+        "humidity_b": "Датчик влажности 2",
+        "humidity_c": "Датчик влажности 3",
+        "humidity_d": "Датчик влажности 4",
+        "humidity_DH": "Датчик влажности 5"
+    },
+    "sensors_map": {
+        "temperature_a": "DH22_temperature",
+        "temperature_b": "OneWire_b",
+        "temperature_c": "OneWire_c",
+        "temperature_d": "OneWire_d",
+        "temperature_e": "OneWire_e",
+        "temperature_DH": "OneWire_a",
+        "humidity_a": "a",
+        "humidity_b": "b",
+        "humidity_c": "c",
+        "humidity_d": "d",
+        "humidity_DH": "DH22_humidity"
+    },
+    "fans": "29-20"
 }

@@ -7,7 +7,8 @@ networker = Networker()
 
 class PeripheralsControl(object):
 
-    def set_pump_activation_time_by_day(self, ip, start, end, day):
+    def add_pump_activation_time_by_day(self, ip, start_end, day):
+        start, end = start_end.split("-", 1)
         if(day == "Monday"):
             schedule.every().monday.at(start).do(self.run_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'monday', ip)
             schedule.every().monday.at(end).do(self.stop_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'monday', ip)
@@ -30,7 +31,8 @@ class PeripheralsControl(object):
             schedule.every().sunday.at(start).do(self.run_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
             schedule.every().sunday.at(end).do(self.stop_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
     
-    def remove_pump_activation_time(self, day, start, end, ip):
+    def remove_pump_activation_time(self, ip, start_end, day):
+        start, end = start_end.split("-", 1)
         tag = f"{ip}-{day}-{start}-{end}"
         schedule.clear(tag)
         print(f"Time on {day} at {start}-{end} in {ip} was removed.")

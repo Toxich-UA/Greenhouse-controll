@@ -24,18 +24,23 @@ class Networker(object):
 
         return data
 
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Networker, cls).__new__(cls)
+        return cls.instance
+
     def get_sensors_data(self, ip):
         data = self.__request(ip, "sensors")
         if (data):
             try:
                 status = json.json2obj(data)
             except:
-                status = open(BaseConstants.NO_CONNECTION, "r").read()
+                status = BaseConstants.NO_CONNECTION
                 print("============================")
                 print("Json got wrong data object")
                 print("============================")
         else:
-            status = json.json2obj(open(BaseConstants.NO_CONNECTION).read())
+            status = json.json2obj(BaseConstants.NO_CONNECTION)
             status.ip = ip
         return status
 
