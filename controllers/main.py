@@ -1,17 +1,16 @@
+import _thread
 import cherrypy
 import os
 import BaseConstants
 from datetime import datetime
 from munch import Munch
-from InterfaceViewModel import InterfaceViewModel
+from GreenhouseController import GreenhouseController
 from dbworker import DBWorker
-from PeripheralsControl import PeripheralsControl
 import sqlite3
 import jsonprocessor as json
 import json as js
 from StatisticController import StatisticController as SC
 from cherrypy.process.plugins import SignalHandler
-import threading as th
 from networker import Networker
 from jinja2 import Environment, FileSystemLoader
 
@@ -19,41 +18,24 @@ from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('src'))
 db = DBWorker()
 networker = Networker()
-peripheral_control = PeripheralsControl()
+
 statistic = None
-interface_view_model = None
-fans_control_mode = True
-pump_control_mode = True
-lamps_control_mode = True
+greenhouse_controller = None
+
+
 
 
 class ServerStart(object):
-
     def __init__(self):
         global statistic
-        global interface_view_model
-        connection = sqlite3.connect(BaseConstants.DB_STRING)
-        greengouses = db.get_all_greenhouses(connection)
-        for gh in greengouses:
-            ip = gh[1]
-            create_greenhouse_config_file(ip)
-            with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
-                data = json.json2obj(outfile.read())
-                for day in data.pump:
-                    for time in data.pump[day]:
-                        start, end = time.split("-", 1)
-                        peripheral_control.set_pump_activation_time_by_day(
-                            day, start, end, ip)
+        global greenhouse_controller
         statistic = SC()
-        statistic_method_thread = th.Timer(
-            5.0, statistic.start_statistic_module)
-        statistic_method_thread.start()
-        interface_view_model = InterfaceViewModel()
+        greenhouse_controller = GreenhouseController()
+        _thread.start_new_thread(statistic.start_statistic_module, ())
 
     @cherrypy.expose
     def index(self):
         tmpl = env.get_template(BaseConstants.INDEX)
-        config = json.json2obj(open(BaseConstants.CONFIG).read())
         sensors = None
         peripherals = None
         connection = sqlite3.connect(BaseConstants.DB_STRING)
@@ -61,31 +43,32 @@ class ServerStart(object):
         connection.close
         for index, gh in enumerate(greengouses):
             gh = list(gh)
-            sensors = interface_view_model.get_sensors(gh[1])
-            peripherals = json.json2obj(statistic.get_sensors_status(gh[1]))
+            sensors = greenhouse_controller.get_greenhouse_data(gh[1])
+            peripherals = greenhouse_controller.get_peripherals_status(gh[1])
             peripherals.fans = "ON" if peripherals.fans == 1 else "OFF"
             peripherals.pump = "ON" if peripherals.pump == 1 else "OFF"
             peripherals.lamps = "ON" if peripherals.lamps == 1 else "OFF"
             gh.append(sensors)
             gh.append(peripherals)
             greengouses[index] = gh
-        return tmpl.render(gh=greengouses, config=config)
+        return tmpl.render(gh=greengouses)
 
     @cherrypy.expose
     def greenhouse(self, ip):
         tmpl = env.get_template(BaseConstants.GREENHOUSE)
-        with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
-            ghConfig = json.json2obj(outfile.read())
-
-        config = json.json2obj(open(BaseConstants.CONFIG).read()).names
+        
+        ghConfig = greenhouse_controller.get_greenhouse_config(ip).get_peripheral()
+        config = list(greenhouse_controller.get_days_name(ip))
 
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         data = db.get_greenhouse(connection, ip)
         connection.close
-        sensors = interface_view_model.get_sensors(ip)
-        names = interface_view_model.get_names(ip)
+        sensors = greenhouse_controller.get_greenhouse_data(ip)
+        names = greenhouse_controller.get_names_map(ip)
 
-        controls = json.json2obj(self.get_peripherals_status(ip))
+        controls = greenhouse_controller.get_auto_controll_status(ip)
+
+
         return tmpl.render(data=data, sensors=sensors, ghConfig=ghConfig, config=config, controls=controls, names=names)
 
     @cherrypy.expose
@@ -112,50 +95,40 @@ class ServerStart(object):
     @cherrypy.expose
     def greenhouseSettings(self, ip):
         tmpl = env.get_template(BaseConstants.GH_CONFIG)
-        names = interface_view_model.get_names(ip).items()
-        sensors = interface_view_model.get_sensors_map(ip).items()
-        return tmpl.render(names=names, sensors=sensors)
+        sensors_map = greenhouse_controller.get_sensors_map(ip).items()
+        names = greenhouse_controller.get_names_map(ip).items()
+        return tmpl.render(names=names, sensors=sensors_map)
 
     @cherrypy.expose
     def update_greenhouse_names_and_sensors(self, ip, names, sensors_map):
-        interface_view_model.set_names_map(ip, js.loads(names))
-        interface_view_model.set_sensors_map(ip, js.loads(sensors_map))
-
+        greenhouse_controller.update_names_map(ip, js.loads(names))
+        greenhouse_controller.update_sensors_map(ip, js.loads(sensors_map))
         return "200"
 
     # REST api links
     @cherrypy.expose
     def status(self, ip):
-        data = json.dump(interface_view_model.get_sensors(ip))
+        data = json.dump(greenhouse_controller.get_greenhouse_data(ip))
         return data
 
     @cherrypy.expose
     def toggle_peripheral_status(self, ip, peripheral):
         data = networker.toggle_peripheral_status(ip, peripheral)
+        greenhouse_controller.update_peripherals(ip)
         return data
 
     @cherrypy.expose
     def get_peripherals_status(self, ip):
         data = json.json2obj(networker.get_peripherals_status(ip))
-        data.fans_control_mode = fans_control_mode
-        data.pump_control_mode = pump_control_mode
-        data.lamps_control_mode = lamps_control_mode
+        peripherals = greenhouse_controller.get_auto_controll_status(ip)
+        data.fans_controll_mode = peripherals.fans_auto_controll_mode
+        data.pump_controll_mode = peripherals.pump_auto_controll_mode
+        data.lamps_controll_mode = peripherals.lamps_auto_controll_mode
         return json.dump(data)
 
     @cherrypy.expose
-    def set_control_mode(self, peripheral, status):
-        global fans_control_mode
-        global pump_control_mode
-        global lamps_control_mode
-
-        if (peripheral == "fans"):
-            fans_control_mode = True if status == "true" else False
-        if (peripheral == "pump"):
-            pump_control_mode = True if status == "true" else False
-        if (peripheral == "lamps"):
-            lamps_control_mode = True if status == "true" else False
-
-        return "200"
+    def set_control_mode(self, ip, peripheral, status):
+        greenhouse_controller.update_auto_controll_status(ip, peripheral, status)
 
     @cherrypy.expose
     def get_logged_statistic(self, ip, range, date_start, date_end):
@@ -201,7 +174,7 @@ class ServerStart(object):
 
 
         data.labels = dates
-        data.names = list(interface_view_model.get_names(ip).values())
+        data.names = list(greenhouse_controller.get_names_map(ip).values())
         data.ip = ip
         data.greenhouses = Munch()
         data.greenhouses.temperature_a = temperature_a
@@ -218,23 +191,14 @@ class ServerStart(object):
         return data
 
     @cherrypy.expose
-    def add_new_pump_activation_time(self, day, start, end, ip):
-        with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
-            data = json.json2obj(outfile.read())
-            data.pump[day].append("{0}-{1}".format(start, end))
-        with open("./configs/{}_Config.json".format(ip), 'w') as outfile:
-            js.dump(data, outfile, indent=4, ensure_ascii=False)
-        peripheral_control.set_pump_activation_time_by_day(ip, start, end, day)
+    def add_new_pump_activation_time(self, ip, start_end, day):
+        greenhouse_controller.add_pump_activation_time(ip, start_end, day)
         return "200"
+        
 
     @cherrypy.expose
-    def remove_pump_activation_time(self, day, start, end, ip):
-        with open("./configs/{}_Config.json".format(ip), 'r') as outfile:
-            data = json.json2obj(outfile.read())
-            data.pump[day].remove("{0}-{1}".format(start, end))
-        with open("./configs/{}_Config.json".format(ip), 'w') as outfile:
-            js.dump(data, outfile, indent=4, ensure_ascii=False)
-        peripheral_control.remove_pump_activation_time(day, start, end, ip)
+    def remove_pump_activation_time(self, ip, start_end, day):
+        greenhouse_controller.remove_pump_activation_time(ip, start_end, day)
         return "200"
 
     def good_print(self, text):
@@ -243,12 +207,13 @@ class ServerStart(object):
         print("========================")
 
     @cherrypy.expose
-    def set_new_fans_activation_time(self, start, end, ip):
-        with open("./configs/{}_Config.json".format(ip), 'r+') as outfile:
-            data = json.json2obj(outfile.read())
-            data.fans = "{0}-{1}".format(start, end)
-            outfile.seek(0)
-            js.dump(data, outfile, indent=4, ensure_ascii=False)
+    def set_new_fans_activation_temp(self, start, end, ip):
+        greenhouse_controller.get_greenhouse_config(ip).set_fans(f"{start}-{end}")
+        return "200"
+
+    @cherrypy.expose
+    def set_new_pump_activation_humidity(self, start, end, ip):
+        greenhouse_controller.get_greenhouse_config(ip).set_pump_sensor(f"{start}-{end}")
         return "200"
 
 
@@ -257,40 +222,23 @@ class db_processing(object):
 
     @cherrypy.tools.accept(media='text/plain')
     def POST(self, ip, ghname, comment):
-        global statistic
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         data = (ip, ghname, comment)
         db.add_new_greenhouse(connection, data)
-        statistic.add(ip)
-        interface_view_model.add(ip)
-        create_greenhouse_config_file(ip)
+        greenhouse_controller.add_gh(ip, )
         connection.close
         return "200"
 
     def GET(self, ip):
         connection = sqlite3.connect(BaseConstants.DB_STRING)
         db.delete_greenhouse(connection, ip)
+        greenhouse_controller.remove_gh(ip)
         connection.close
-        statistic.remove(ip)
-        interface_view_model.remove(ip)
-
-        os.remove("./configs/{}_Config.json".format(ip))
         return "200"
 
 
-def create_greenhouse_config_file(ip):
-    error = False
-    try:
-        open("./configs/{}_Config.json".format(ip), "x")
-    except:
-        error = True
-    if(not error):
-        f = open("./configs/{}_Config.json".format(ip), "w+")
-        f.write(open("./configs/greenhouseConfig.json", "r").read())
-        f.close()
-
-
 def shutdown():
+    global statistic
     statistic.running = False
     cherrypy.engine.exit()
 

@@ -16,4 +16,4 @@ def load(data):
 def dump(data, file=None):
     if(file):
         return json.dump(data, file, indent=4, ensure_ascii=False)
-    return json.dumps(data)
+    return json.dumps(data, indent=4, ensure_ascii=False)

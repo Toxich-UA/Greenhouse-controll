@@ -88,8 +88,8 @@ $(document).ready(function () {
             type: "GET",
             url: "/toggle_peripheral_status",
             data: {
-                "ip": $("#ipAddres").text(),
-                "peripheral": "fans"
+                ip: $("#ipAddres").text(),
+                peripheral: "fans"
             }
         }).done(function (data) {
             if (data != "Нет данных") {
@@ -104,8 +104,8 @@ $(document).ready(function () {
             type: "GET",
             url: "/toggle_peripheral_status",
             data: {
-                "ip": $("#ipAddres").text(),
-                "peripheral": "pump"
+                ip: $("#ipAddres").text(),
+                peripheral: "pump"
             }
         }).done(function (data) {
             if (data != "Нет данных") {
@@ -120,8 +120,8 @@ $(document).ready(function () {
             type: "GET",
             url: "/toggle_peripheral_status",
             data: {
-                "ip": $("#ipAddres").text(),
-                "peripheral": "lamps"
+                ip: $("#ipAddres").text(),
+                peripheral: "lamps"
             }
         }).done(function (data) {
             if (data != "Нет данных") {
@@ -138,8 +138,9 @@ $(document).ready(function () {
             type: "GET",
             url: "/set_control_mode",
             data: {
-                "peripheral": "fans",
-                "status": $(this).prop('checked')
+                ip: $("#ipAddres").text(),
+                peripheral: "fans",
+                status: $(this).prop('checked')
             }
         }).done(function (data) {
 
@@ -152,8 +153,9 @@ $(document).ready(function () {
             type: "GET",
             url: "/set_control_mode",
             data: {
-                "peripheral": "pump",
-                "status": $(this).prop('checked')
+                ip: $("#ipAddres").text(),
+                peripheral: "pump",
+                status: $(this).prop('checked')
             }
         }).done(function (data) {
 
@@ -166,11 +168,26 @@ $(document).ready(function () {
             type: "GET",
             url: "/set_control_mode",
             data: {
-                "peripheral": "lamps",
-                "status": $(this).prop('checked')
+                ip: $("#ipAddres").text(),
+                peripheral: "lamps",
+                status: $(this).prop('checked')
             }
         }).done(function (data) {
 
+        });
+    });
+
+    $("#pumpControll").change(function (e){
+        e.preventDefault()
+        $.ajax({
+            type: "GET",
+            url: "/set_control_mode",
+            data: {
+                ip: $("#ipAddres").text(),
+                peripheral: "pump_by_humidity",
+                status: $(this).prop('checked')
+            }
+        }).done(function (data) {
         });
     });
     function update_status(obj, data, change) {
@@ -178,11 +195,10 @@ $(document).ready(function () {
         update_change_icon(change, data)
     };
     function update_change_icon(obj, data) {
-
-        if (data.change == "UP") {
+        if (data.change > 0) {
             obj.removeClass(arrow_low).removeClass(arrow_none).addClass(arrow_high);
             obj.removeClass(text_green).addClass(text_red);
-        } else if (data.change == "DOWN") {
+        } else if (data.change < 0) {
             obj.removeClass(arrow_high).removeClass(arrow_none).addClass(arrow_low);
             obj.removeClass(text_red).addClass(text_green);
         } else {
@@ -220,19 +236,18 @@ $(document).ready(function () {
         e.preventDefault();
         let timeStart = $("#" + this.id + "Start").val();
         let timeEnd = $("#" + this.id + "End").val();
+        let start_end = timeStart + "-" + timeEnd
 
         if (timeStart && timeEnd) {
             $.ajax({
                 type: "GET",
                 url: "/add_new_pump_activation_time",
                 data: {
-                    day: $(this).attr('name'),
-                    start: timeStart,
-                    end: timeEnd,
-                    ip: $("#ipAddres").text()
+                    ip: $("#ipAddres").text(),
+                    start_end: start_end,
+                    day: $(this).attr('name')
                 }
             }).done(function (data) {
-                console.log(data);
                 if(data == "200"){
                     alert("Успешно добавлено")
                     location.reload();
@@ -242,25 +257,21 @@ $(document).ready(function () {
     });
     $("#removePumpTime").click(function (e) {
         e.preventDefault();
-        let time = $(this).parent().text().trim().split('-');
+        let start_end = $(this).parent().text().trim();
         let index = $(this).parent().parent().attr("name");
-        let timeStart = time[0];
-        let timeEnd = time[1];
-
-        if (timeStart && timeEnd) {
+        console.log(start_end);
+        if (start_end) {
             $.ajax({
                 type: "GET",
                 url: "/remove_pump_activation_time",
                 data: {
-                    day: $("#blockName"+index).text().trim(),
-                    start: timeStart,
-                    end: timeEnd,
-                    ip: $("#ipAddres").text()
+                    ip: $("#ipAddres").text(),
+                    start_end: start_end,   
+                    day: $("#blockName"+index).text().trim()
                 }
             }).done(function (data) {
-                console.log(data);
                 if(data == "200"){
-                    alert("Успешно добавлено")
+                    alert("Успешно удалено")
                     location.reload();
                 };
             });
@@ -269,27 +280,54 @@ $(document).ready(function () {
     
     $("#setNewFansTempBtn").click(function (e){
         e.preventDefault()
-        let timeOn = $("#fansTempOn").val();
-        let timeOff = $("#fansTempOff").val();
-        if(timeOn == "" || timeOff == ""){
+        let tempOn = $("#fansTempOn").val();
+        let tempOff = $("#fansTempOff").val();
+        if(tempOn == "" || tempOff == ""){
             $("#fansTempOn").toggleClass("border border-danger");
             $("#fansTempOff").toggleClass("border border-danger");
             return;
         }
         $.ajax({
             type: "GET",
-            url: "/set_new_fans_activation_time",
+            url: "/set_new_fans_activation_temp",
             data: {
-                start: timeOn,
-                end: timeOff,
-                ip: $("#ipAddres").text()
+                ip: $("#ipAddres").text(),
+                start: tempOn,
+                end: tempOff
             }
         }).done(function (data) {
-            console.log(data);
             if(data == "200"){
                 alert("Успешно добавлено")
                 location.reload();
             };
         });
     });
+
+    $("#setNewPumpHumidityBtn").click(function (e){
+        e.preventDefault()
+        let timeOn = $("#pumpHumOn").val();
+        let timeOff = $("#pumpHumOff").val();
+        if(timeOn == "" || timeOff == ""){
+            $("#pumpHumOn").toggleClass("border border-danger");
+            $("#pumpHumOff").toggleClass("border border-danger");
+            return;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/set_new_pump_activation_humidity",
+            data: {
+                start: timeOn,
+                end: timeOff,
+                ip: $("#ipAddres").text()
+            }
+        }).done(function (data) {
+            if(data == "200"){
+                alert("Успешно добавлено")
+                location.reload();
+            };
+        });
+    });
+
+    
+
 });
