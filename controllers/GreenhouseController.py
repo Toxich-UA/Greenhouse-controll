@@ -3,7 +3,6 @@ import BaseConstants
 from Greenhouse import Greenhouse
 from PeripheralsControl import PeripheralsControl
 from dbworker import DBWorker
-from jsonprocessor import json2obj
 from networker import Networker
 
 networker = Networker()
@@ -26,7 +25,6 @@ class GreenhouseController(object):
                 for time in times:
                     self.peripheral_control.add_pump_activation_time_by_day(ip, time, day)
         
-
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(GreenhouseController, cls).__new__(cls)
@@ -34,7 +32,7 @@ class GreenhouseController(object):
 
     def update_all_gh_sensors_data(self):
         for key in self.list_of_greenhouses:
-            self.list_of_greenhouses[key].set_sensors_data(networker.get_sensors_data(key))
+            self.list_of_greenhouses[key].set_sensors_data()
 
     def is_data_valid(self, ip):
         return self.list_of_greenhouses[ip].is_data_valid()
@@ -81,9 +79,6 @@ class GreenhouseController(object):
     def get_auto_controll_status(self, ip):
         return self.list_of_greenhouses[ip].get_auto_controll_status()
 
-    def get_peripherals_status(self, ip):
-        return self.list_of_greenhouses[ip].get_peripherals_status()
-
     def update_auto_controll_status(self, ip, peripheral, status):
         self.list_of_greenhouses[ip].update_auto_controll_status(peripheral, status)
 
@@ -91,8 +86,8 @@ class GreenhouseController(object):
         self.list_of_greenhouses[ip].update_peripherals_status()
 
     def add_gh(self, ip):
-        self.list_of_greenhouses[ip] = Greenhouse(ip, json2obj(BaseConstants.NO_CONNECTION))
+        self.list_of_greenhouses[ip] = Greenhouse(ip)
 
     def remove_gh(self, ip):
         self.list_of_greenhouses[ip].remove_config()
-        self.list_of_greenhouses.remove(ip)
+        del self.list_of_greenhouses[ip]

@@ -5,6 +5,6 @@ controlers/__pycache__/*
 logs/*
 DB/*
 sensors/*
-config/*
+configs/*
 static/css/*
 static/js/libs/*

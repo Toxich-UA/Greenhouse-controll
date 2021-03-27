@@ -1,14 +1,13 @@
-import json
-from SensorsDataViewModel import SensorsDataViewModel
+
+from SensorsDataModel import SensorsDataModel
 from jsonprocessor import json2obj
 from networker import Networker
 from Config import Config
 
-networker = Networker()
-
 
 class Greenhouse(object):
     config = None
+    networker = None
 
     data_viewmodel = None
     last_raw_data = None
@@ -22,13 +21,15 @@ class Greenhouse(object):
     pump_status = False
     lamps_status = False
 
-    def __init__(self, ip, new_data):
-        self.data_viewmodel = SensorsDataViewModel()
-        self.set_sensors_data(new_data)
+    def __init__(self, ip):
         self.ip = ip
+        self.data_viewmodel = SensorsDataModel()
+        self.networker = Networker()
         self.config = Config(ip)
         self.data_viewmodel.names_map = self.config.get_names_map()
         self.data_viewmodel.sensors_map = self.config.get_sensors_map()
+        self.data_viewmodel.sensors = self.config.get_sensors_data()
+        self.set_sensors_data()
         self.update_peripherals_status()
 
     def get_auto_controll_status(self):
@@ -49,6 +50,7 @@ class Greenhouse(object):
             self.pump_auto_controll_by_humidity = True if status == "true" else False
 
     def get_peripherals_status(self):
+        self.update_peripherals_status()
         return json2obj(self.data_viewmodel.peripherals)
 
     def get_sensors_map(self):
@@ -61,7 +63,7 @@ class Greenhouse(object):
         return self.config
 
     def update_peripherals_status(self):
-        response = json2obj(networker.get_peripherals_status(self.ip))
+        response = json2obj(self.networker.get_peripherals_status(self.ip))
         self.data_viewmodel.peripherals.fans = response.fans
         self.data_viewmodel.peripherals.pump = response.pump
         self.data_viewmodel.peripherals.lamps = response.lamps
@@ -74,12 +76,9 @@ class Greenhouse(object):
     def get_sensors_data(self):
         return self.data_viewmodel.sensors
 
-    def get_peripherals_status(self):
-        return self.data_viewmodel.peripherals
-
-    def set_sensors_data(self, new_data):
+    def set_sensors_data(self):
+        new_data = self.networker.get_sensors_data(self.ip)
         self.last_raw_data = new_data
-        
         for key in self.data_viewmodel.sensors.keys():
             if(key.startswith("temperature")):
                 self.data_viewmodel.sensors[key].change = self.compare(
@@ -89,13 +88,8 @@ class Greenhouse(object):
                 self.data_viewmodel.sensors[key].change = self.compare(
                     new_data.sensors.humidity[self.data_viewmodel.sensors_map[key]].val, self.data_viewmodel.sensors[key].val)
                 self.data_viewmodel.sensors[key].val = new_data.sensors.humidity[self.data_viewmodel.sensors_map[key]].val
-        
 
     def compare(self, new, old):
-        # print("------------------------")
-        # print("OLD: ", old)
-        # print("NEW: ", new)
-        # print("------------------------")
         if(type(new) == str or type(old) == str):
             return 0
         if(new == None or old == None):

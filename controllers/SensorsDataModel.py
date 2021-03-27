@@ -1,11 +1,6 @@
 from jsonprocessor import json2obj
 
-class SensorsDataViewModel(object):
-
-    def __init__(self):
-        pass
-
-
+class SensorsDataModel(object):
     sensors = json2obj({
         "temperature_a": {
             "val": 0,
