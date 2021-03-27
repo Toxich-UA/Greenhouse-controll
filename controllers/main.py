@@ -1,10 +1,9 @@
-import _thread
+from threading import Thread
 import cherrypy
 import os
 import BaseConstants
 from datetime import datetime
 from munch import Munch
-from GreenhouseController import GreenhouseController
 from dbworker import DBWorker
 import sqlite3
 import jsonprocessor as json
@@ -14,7 +13,6 @@ from cherrypy.process.plugins import SignalHandler
 from networker import Networker
 from jinja2 import Environment, FileSystemLoader
 
-
 env = Environment(loader=FileSystemLoader('src'))
 db = DBWorker()
 networker = Networker()
@@ -22,16 +20,14 @@ networker = Networker()
 statistic = None
 greenhouse_controller = None
 
-
-
-
 class ServerStart(object):
     def __init__(self):
         global statistic
         global greenhouse_controller
         statistic = SC()
-        greenhouse_controller = GreenhouseController()
-        _thread.start_new_thread(statistic.start_statistic_module, ())
+        greenhouse_controller = statistic.greenhouse_controller
+        thread = Thread(target = statistic.start_statistic_module)
+        thread.start()
 
     @cherrypy.expose
     def index(self):
@@ -45,9 +41,6 @@ class ServerStart(object):
             gh = list(gh)
             sensors = greenhouse_controller.get_greenhouse_data(gh[1])
             peripherals = greenhouse_controller.get_peripherals_status(gh[1])
-            peripherals.fans = "ON" if peripherals.fans == 1 else "OFF"
-            peripherals.pump = "ON" if peripherals.pump == 1 else "OFF"
-            peripherals.lamps = "ON" if peripherals.lamps == 1 else "OFF"
             gh.append(sensors)
             gh.append(peripherals)
             greengouses[index] = gh
@@ -265,9 +258,6 @@ cherrypy.config.update({'log.screen': True,
                         'log.error_file': './logs/error.txt'})
 
 signalhandler = SignalHandler(cherrypy.engine)
-signalhandler.handlers['SIGTERM'] = shutdown
-signalhandler.handlers['SIGHUP'] = shutdown
-signalhandler.handlers['SIGQUIT'] = shutdown
 signalhandler.handlers['SIGINT'] = shutdown
 signalhandler.subscribe()
 

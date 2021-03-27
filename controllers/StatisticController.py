@@ -2,13 +2,9 @@ import sqlite3
 import time
 import schedule
 import BaseConstants
-from Greenhouse import Greenhouse
 from GreenhouseController import GreenhouseController
-import jsonprocessor as json
-import json as js
 from dbworker import DBWorker
 from networker import Networker
-from sensors_data import Sensors_data
 
 db = DBWorker()
 networker = Networker()
@@ -18,14 +14,11 @@ write_to_db_interval = 12 * update_interval
 
 
 class StatisticController(object):
-    greenhouse_controller = GreenhouseController()
+    greenhouse_controller = None
     running = True
 
     def __init__(self):
-        connection = sqlite3.connect(BaseConstants.DB_STRING)
-        for gh in db.get_all_greenhouses(connection):
-            self.greenhouse_controller.add_gh(gh[1])
-        connection.close
+        self.greenhouse_controller = GreenhouseController()
 
     def start_statistic_module(self):
         schedule.every(update_interval).seconds.do(self.update_sensors_data)

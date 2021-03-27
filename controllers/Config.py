@@ -28,7 +28,7 @@ class Config(object):
 
     def get_pump_times(self):
         return self.base_config.peripherals.pump_time
-    
+
     def get_days_name(self):
         return self.base_config.peripherals.pump_time.keys()
 
@@ -65,3 +65,51 @@ class Config(object):
     def save_to_file(self):
         with open(BaseConstants.BASE_GH_CONFIG_PATH.format(self.ip), 'w') as outfile:
             json.dump(self.base_config, outfile)
+
+    def get_sensors_data(self):
+        return json.json2obj({
+            "temperature_a": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "temperature_b": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "temperature_c": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "temperature_d": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "temperature_e": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "temperature_DH": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "humidity_a": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "humidity_b": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "humidity_c": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "humidity_d": {
+                "val": 0,
+                "change": "NONE"
+            },
+            "humidity_DH": {
+                "val": 0,
+                "change": "NONE"
+            },
+        })

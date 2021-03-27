@@ -36,6 +36,7 @@ class Networker(object):
                 status = json.json2obj(data)
             except:
                 status = BaseConstants.NO_CONNECTION
+                status.ip = ip
                 print("============================")
                 print("Json got wrong data object")
                 print("============================")
