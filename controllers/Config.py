@@ -31,6 +31,12 @@ class Config(object):
 
     def get_days_name(self):
         return self.base_config.peripherals.pump_time.keys()
+    
+    def get_pump_sensor(self):
+        return self.base_config.peripherals.pump_sensor
+
+    def get_fans_sensor(self):
+        return self.base_config.peripherals.fans
 
     def add_pump_time(self, day, time_stamp):
         self.base_config.peripherals.pump_time[day].append(time_stamp)
@@ -54,9 +60,6 @@ class Config(object):
 
     def set_sensors_map(self, new_data):
         self.base_config.sensors_map = new_data
-        print("---------------------")
-        print(self.base_config.sensors_map)
-        print("---------------------")
         self.save_to_file()
 
     def remove_config_file(self):
