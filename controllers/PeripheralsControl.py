@@ -38,13 +38,14 @@ class PeripheralsControl(object):
         if(day == "Sunday"):
             schedule.every().sunday.at(start).do(self.run_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
             schedule.every().sunday.at(end).do(self.stop_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
-        self.logger.info(f"Pump activation on {day} in {start_end} was added!")
+        self.logger.info(f"Pump activation on {day} at {start_end} was added!")
+        self.logger.info(f"Time untill next run {schedule.idle_seconds()}")
     
     def remove_pump_activation_time(self, ip, start_end, day):
         start, end = start_end.split("-", 1)
         tag = f"{ip}-{day}-{start}-{end}"
         schedule.clear(tag)
-        self.logger.info(f"Time on {day} at {start}-{end} in {ip} was removed.")
+        self.logger.info(f"Time on {day} at {start}-{end} for {ip} was removed.")
 
     def cancel_all_job(self, ip):
         schedule.clear(ip)
@@ -52,17 +53,17 @@ class PeripheralsControl(object):
 
     def run_pump(self, ip):
         networker.set_peripheral_status(ip, "pump", "ON")
-        self.logger.info(f'Pump is running on {ip}')
+        self.logger.info(f'Pump is running for {ip}')
 
     def stop_pump(self, ip):
         networker.set_peripheral_status(ip, "pump", "OFF")
-        self.logger.info(f'Pump is stoped on {ip}')
+        self.logger.info(f'Pump is stoped for {ip}')
 
     def run_fans(self, ip):
         networker.set_peripheral_status(ip, "fans", "ON")
-        self.logger.info(f'Fans is running on {ip}')
+        self.logger.info(f'Fans is running for {ip}')
 
     def stop_fans(self, ip):
         networker.set_peripheral_status(ip, "fans", "OFF")
-        self.logger.info(f'Fans is stoped on {ip}')
+        self.logger.info(f'Fans is stoped for {ip}')
 
