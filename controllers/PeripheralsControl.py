@@ -39,7 +39,6 @@ class PeripheralsControl(object):
             schedule.every().sunday.at(start).do(self.run_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
             schedule.every().sunday.at(end).do(self.stop_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
         self.logger.info(f"Pump activation on {day} at {start_end} was added!")
-        self.logger.info(f"Time untill next run {schedule.idle_seconds()}")
     
     def remove_pump_activation_time(self, ip, start_end, day):
         start, end = start_end.split("-", 1)
