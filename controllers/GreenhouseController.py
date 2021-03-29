@@ -11,7 +11,6 @@ class GreenhouseController(object):
     db = DBWorker()
     peripheral_control = PeripheralsControl()
 
-
     list_of_greenhouses = {}
 
     def __init__(self):
@@ -21,10 +20,7 @@ class GreenhouseController(object):
         for gh in greengouses:
             ip = gh[1]
             self.add_gh(ip)
-            for day, times in self.list_of_greenhouses[ip].config.get_pump_times().items():
-                for time in times:
-                    self.peripheral_control.add_pump_activation_time_by_day(ip, time, day)
-        
+            
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(GreenhouseController, cls).__new__(cls)
@@ -62,7 +58,8 @@ class GreenhouseController(object):
         self.list_of_greenhouses[ip].update_names_map(new_map)
 
     def add_pump_activation_time(self, ip, start_end, day):
-        self.peripheral_control.add_pump_activation_time_by_day(ip, start_end, day)
+        if(not self.list_of_greenhouses[ip].pump_auto_controll_by_humidity):
+            self.peripheral_control.add_pump_activation_time_by_day(ip, start_end, day)
         self.list_of_greenhouses[ip].config.add_pump_time(day, start_end)
 
     def remove_pump_activation_time(self, ip, start_end, day):

@@ -3,10 +3,10 @@ import logging
 import BaseConstants
 import jsonprocessor as json
 
-logger = logging.getLogger('networker')
 
 
 class Networker(object):
+    logger = logging.getLogger(__name__)
 
     def __request(self, ip, path, status=None):
         request_string = "http://{0}:80/{1}".format(ip, path)
@@ -19,7 +19,7 @@ class Networker(object):
                 data = requests.post(request_string, data={
                     "key": BaseConstants.SECRET_KEY, "status": status}, verify=False, timeout=2).text
         except:
-            logger.error("Greenhouse on {} is not responding".format(ip))
+            self.logger.debug("Greenhouse on {} is not responding".format(ip))
             return False
 
         return data
@@ -37,9 +37,7 @@ class Networker(object):
             except:
                 status = json.json2obj(BaseConstants.NO_CONNECTION)
                 status.ip = ip
-                print("============================")
-                print("Json got wrong data object")
-                print("============================")
+                self.logger.info("Json got wrong object")
         else:
             status = json.json2obj(BaseConstants.NO_CONNECTION)
             status.ip = ip

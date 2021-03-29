@@ -252,11 +252,11 @@ if __name__ == '__main__':
             'tools.staticdir.dir': 'static'
         },
     }
-cherrypy.config.update({'log.screen': True,
+cherrypy.config.update({'log.screen': False,
                         'server.socket_host': '0.0.0.0',
                         'log.access_file': './logs/access.txt',
                         'log.error_file': './logs/error.txt'})
-
+cherrypy.log.access_log.propagate = False
 signalhandler = SignalHandler(cherrypy.engine)
 signalhandler.handlers['SIGINT'] = shutdown
 signalhandler.subscribe()

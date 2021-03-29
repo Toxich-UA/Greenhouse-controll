@@ -1,5 +1,6 @@
 FROM python:3.6
 
+ENV TZ=Europe/Kiev
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
