@@ -8,6 +8,10 @@ var text_red = "text-success";
 var text_green = "text-danger";
 
 window.onload = function () {
+    update_peripherals_status();
+};
+
+function update_peripherals_status() {
     let ip = $("#ipAddres").text();
     $.ajax({
         type: "GET",
@@ -39,8 +43,7 @@ window.onload = function () {
         set_pump()
         set_lamps()
     })
-};
-
+}
 
 function set_fans() {
 
@@ -230,6 +233,7 @@ $(document).ready(function () {
             update_status($("#hum_e"), status.humidity_DH, $("#hum_e_change"))
 
         });
+        update_peripherals_status();
     }, 5 * 1000);
 
     $(".pumpTimeBtn").click(function (e) {

@@ -55,7 +55,9 @@ class Greenhouse(object):
             self.lamps_auto_controll_mode = True if status == "true" else False
         if (peripheral == "pump_by_humidity"):
             self.pump_auto_controll_by_humidity = True if status == "true" else False
-            if(not self.pump_auto_controll_by_humidity):
+            if(self.pump_auto_controll_by_humidity):
+                self.peripheral_control.cancel_all_job(self.ip)
+            else:
                 self.update_pump_activation_time()
 
     def update_pump_activation_time(self):
@@ -121,7 +123,7 @@ class Greenhouse(object):
     def update_peripherals_auto_controll_by_temperature(self):
         if(self.pump_auto_controll_mode):
             if(self.pump_auto_controll_by_humidity):
-                self.peripheral_control.cancel_all_job(self.ip)
+                # self.peripheral_control.cancel_all_job(self.ip)
                 start, end = self.config.get_pump_sensor().split("-", 1)
                 start = int(start)
                 end = int(end)
@@ -138,7 +140,7 @@ class Greenhouse(object):
                         self.pump_status = 0
 
         if(self.fans_auto_controll_mode):
-            end, start = self.config.get_pump_sensor().split("-", 1)
+            start, end = self.config.get_fans_sensor().split("-", 1)
             start = int(start)
             end = int(end)
             current_status = self.get_peripheral_status("fans")
@@ -158,12 +160,12 @@ class Greenhouse(object):
         return max
 
     def __get_humidity_min_value(self):
-        min = 0
+        min = 100
         for key, value in self.data_model.sensors.items():
-            if(value < min):
-                min = value
+            if(value.val < min):
+                min = value.val
         return min
-        
+
     def compare(self, new, old):
         if(type(new) == str or type(old) == str):
             return 0
