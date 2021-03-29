@@ -9,7 +9,7 @@ networker = Networker()
 
 class PeripheralsControl(object):
     logger = logging.getLogger(__name__)
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(PeripheralsControl, cls).__new__(cls)

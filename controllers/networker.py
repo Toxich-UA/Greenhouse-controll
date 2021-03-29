@@ -37,7 +37,7 @@ class Networker(object):
             except:
                 status = json.json2obj(BaseConstants.NO_CONNECTION)
                 status.ip = ip
-                self.logger.error("Json got wrong object")
+                self.logger.info("Json got wrong object")
         else:
             status = json.json2obj(BaseConstants.NO_CONNECTION)
             status.ip = ip
