@@ -1,9 +1,11 @@
+import logging
 import time
 import schedule
 from networker import Networker
 
 networker = Networker()
 
+logger = logging.getLogger('peripheralControll')
 
 class PeripheralsControl(object):
 
@@ -35,31 +37,31 @@ class PeripheralsControl(object):
         if(day == "Sunday"):
             schedule.every().sunday.at(start).do(self.run_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
             schedule.every().sunday.at(end).do(self.stop_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
-        print(f"Pump activation on {day} in {start_end} was added!")
+        logger.debug(f"Pump activation on {day} in {start_end} was added!")
     
     def remove_pump_activation_time(self, ip, start_end, day):
         start, end = start_end.split("-", 1)
         tag = f"{ip}-{day}-{start}-{end}"
         schedule.clear(tag)
-        print(f"Time on {day} at {start}-{end} in {ip} was removed.")
+        logger.debug(f"Time on {day} at {start}-{end} in {ip} was removed.")
 
     def cancel_all_job(self, ip):
         schedule.clear(ip)
-        print(f"All jobs for {ip} was canceled!")
+        logger.debug(f"All jobs for {ip} was canceled!")
 
     def run_pump(self, ip):
         networker.set_peripheral_status(ip, "pump", "ON")
-        print(f'Pump is running on {ip}')
+        logger.debug(f'Pump is running on {ip}')
 
     def stop_pump(self, ip):
         networker.set_peripheral_status(ip, "pump", "OFF")
-        print(f'Pump is stoped on {ip}')
+        logger.debug(f'Pump is stoped on {ip}')
 
     def run_fans(self, ip):
         networker.set_peripheral_status(ip, "fans", "ON")
-        print(f'Fans is running on {ip}')
+        logger.debug(f'Fans is running on {ip}')
 
     def stop_fans(self, ip):
         networker.set_peripheral_status(ip, "fans", "OFF")
-        print(f'Fans is stoped on {ip}')
+        logger.debug(f'Fans is stoped on {ip}')
 
