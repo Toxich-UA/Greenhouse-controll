@@ -5,10 +5,11 @@ from networker import Networker
 
 networker = Networker()
 
-logger = logging.getLogger('peripheralControll')
+
 
 class PeripheralsControl(object):
-
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.DEBUG)
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(PeripheralsControl, cls).__new__(cls)
@@ -37,31 +38,31 @@ class PeripheralsControl(object):
         if(day == "Sunday"):
             schedule.every().sunday.at(start).do(self.run_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
             schedule.every().sunday.at(end).do(self.stop_pump, ip).tag(f'{ip}-{day}-{start}-{end}', 'sunday', ip)
-        logger.debug(f"Pump activation on {day} in {start_end} was added!")
+        self.logger.info(f"Pump activation on {day} in {start_end} was added!")
     
     def remove_pump_activation_time(self, ip, start_end, day):
         start, end = start_end.split("-", 1)
         tag = f"{ip}-{day}-{start}-{end}"
         schedule.clear(tag)
-        logger.debug(f"Time on {day} at {start}-{end} in {ip} was removed.")
+        self.logger.info(f"Time on {day} at {start}-{end} in {ip} was removed.")
 
     def cancel_all_job(self, ip):
         schedule.clear(ip)
-        logger.debug(f"All jobs for {ip} was canceled!")
+        self.logger.info(f"All jobs for {ip} was canceled!")
 
     def run_pump(self, ip):
         networker.set_peripheral_status(ip, "pump", "ON")
-        logger.debug(f'Pump is running on {ip}')
+        self.logger.info(f'Pump is running on {ip}')
 
     def stop_pump(self, ip):
         networker.set_peripheral_status(ip, "pump", "OFF")
-        logger.debug(f'Pump is stoped on {ip}')
+        self.logger.info(f'Pump is stoped on {ip}')
 
     def run_fans(self, ip):
         networker.set_peripheral_status(ip, "fans", "ON")
-        logger.debug(f'Fans is running on {ip}')
+        self.logger.info(f'Fans is running on {ip}')
 
     def stop_fans(self, ip):
         networker.set_peripheral_status(ip, "fans", "OFF")
-        logger.debug(f'Fans is stoped on {ip}')
+        self.logger.info(f'Fans is stoped on {ip}')
 
