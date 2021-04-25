@@ -44,13 +44,13 @@ class Networker(object):
         return status
 
     def toggle_peripheral_status(self, ip, peripheral_name):
-        data = self.__request(ip, f"peripheral/{peripheral_name}")
+        data = self.__request(ip, f"peripherals/{peripheral_name}")
         if (not(data)):
             return 'Нет данных'
         return data
 
     def set_peripheral_status(self, ip, peripheral_name, status):
-        data = self.__request(ip, f"peripheral/{peripheral_name}", status)
+        data = self.__request(ip, f"peripherals/{peripheral_name}", status)
         if (not(data)):
             return 'Нет данных'
         return data

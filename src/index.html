@@ -37,11 +37,11 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">Температура воздуха :
                                 {{gh[loop.index0][4].temperature_a.val}}°C</li>
-                            <li class="list-group-item">Влажность воздуха : {{gh[loop.index0][4].humidity_a.val}}%
+                            <li class="list-group-item">Влажность воздуха : {{gh[loop.index0][4].DH22_humidity.val}}%
                             </li>
                             <li class="list-group-item">Температура почвы :
                                 {{gh[loop.index0][4].temperature_b.val}}°C</li>
-                            <li class="list-group-item">Влажность почвы : {{gh[loop.index0][4].humidity_b.val}}%
+                            <li class="list-group-item">Влажность почвы : {{gh[loop.index0][4].humidity_a.val}}%
                             </li>
                             <li class="list-group-item">Вентиляторы : <span class="fans"
                                     id="fans">{{gh[loop.index0][5].fans}}</span></li>
