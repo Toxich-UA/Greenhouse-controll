@@ -1,8 +1,8 @@
 Info
 =====
+This project offer greenhouse controll and monitoring functionality’s. There are using raspberry py (could be different pc) as main server, and NodeMcu with set of sensors like: DS18B20, DH22, and capacitive soil moisture sensor. This type of connections provide near to unlimited count of greenhouses to be connected.
 
-
-Usege
+Usage
 =====
 The POST request with a special code to
 ```http
