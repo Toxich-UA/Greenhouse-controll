@@ -65,9 +65,9 @@ will return
         } 
     },
     "status":{
-        "fans": "Нет данных",
-        "pump": "Нет данных",
-        "lamps": "Нет данных"
+        "fans": "No data",
+        "pump": "No data",
+        "lamps": "No data"
     }
 }
 ```
