@@ -16,49 +16,49 @@ will return
     "sensors": {
         "temperature": {
             "DH22_temperature": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "OneWire_a": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "OneWire_b": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "OneWire_c": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "OneWire_d": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "OneWire_e": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             }
         },
         "humidity":{
             "DH22_humidity": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "a": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "b": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "c": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             },
             "d": {
-                "val": "Нет данных",
+                "val": "No data",
                 "change": "0"
             }
 
